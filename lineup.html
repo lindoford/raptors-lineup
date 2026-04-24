@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Lineup Card</title>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║           LITTLE LEAGUE LINEUP CARD  — Kindle Edition        ║
+  ║                                                              ║
+  ║  HOW TO EDIT:                                                ║
+  ║  1. Open this file in any text editor (Notepad, TextEdit...) ║
+  ║  2. Scroll down to the GAME section in the <script>          ║
+  ║  3. Change teamName, batting order, and each inning          ║
+  ║  4. Save and serve (see HOW TO OPEN ON KINDLE below)         ║
+  ║                                                              ║
+  ║  VALID POSITION KEYS PER INNING:                             ║
+  ║    pitcher, catcher, first, second, third, shortstop,        ║
+  ║    leftField, leftCenterField, centerField,                  ║
+  ║    rightCenterField, rightField                              ║
+  ║  Add a bench array to list players sitting that inning.      ║
+  ║                                                              ║
+  ║  HOW TO OPEN ON KINDLE:                                      ║
+  ║  1. Put this file in a folder on your computer               ║
+  ║  2. Open a terminal / command prompt in that folder and run: ║
+  ║     Mac/Linux:  python3 -m http.server 8080                  ║
+  ║     Windows:    python -m http.server 8080                   ║
+  ║  3. Find your computer's IP (Mac: System Preferences >       ║
+  ║     Network; Windows: run ipconfig, look for IPv4 Address)   ║
+  ║  4. Make sure Kindle is on the same WiFi network             ║
+  ║  5. Open Kindle browser > type:  http://YOUR_IP:8080/lineup.html
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  background: #fff;
+  color: #000;
+  height: 100vh;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+#header {
+  background: #000;
+  color: #fff;
+  text-align: center;
+  padding: 6px 12px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+#team-name  { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+#inning-lbl { font-size: 13px; margin-top: 2px; letter-spacing: 3px; opacity: 0.85; }
+
+/* ── MAIN SPLIT ── */
+#main {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── LEFT: DIAMOND ── */
+#diamond-panel {
+  width: 65%;
+  border-right: 2px solid #000;
+  padding: 4px 2px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#diamond-svg { width: 100%; height: 100%; display: block; }
+
+/* ── RIGHT: BATTING + BENCH ── */
+#batting-panel {
+  width: 35%;
+  padding: 5px 7px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  overflow: hidden;
+}
+#batting-panel h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  border-bottom: 2px solid #000;
+  padding-bottom: 3px;
+  margin-bottom: 4px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+#bat-list {
+  list-style: none;
+  -webkit-flex: 1;
+  flex: 1;
+  overflow: hidden;
+}
+#bat-list li {
+  font-size: 15px;
+  padding: 2px 1px;
+  border-bottom: 1px solid #ddd;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: baseline;
+  align-items: baseline;
+}
+#bat-list li .num  { font-weight: bold; min-width: 20px; }
+#bat-list li .pos  { font-size: 11px; color: #555; margin-left: auto; font-style: italic; }
+
+/* ── BENCH SECTION ── */
+#bench-wrap {
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  border-top: 2px solid #000;
+  padding-top: 4px;
+  margin-top: 4px;
+}
+#bench-wrap h4 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+}
+#bench-list {
+  list-style: none;
+}
+#bench-list li {
+  font-size: 15px;
+  padding: 2px 1px;
+  border-bottom: 1px solid #eee;
+  display: -webkit-flex;
+  display: flex;
+  gap: 4px;
+}
+#bench-list li .bnum { font-weight: bold; min-width: 18px; color: #555; }
+#bench-list li.empty { color: #bbb; font-style: italic; }
+
+/* ── FOOTER ── */
+#footer {
+  background: #ebebeb;
+  border-top: 3px solid #000;
+  padding: 8px 14px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.nav-btn {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 11px 22px;
+  background: #000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  min-width: 85px;
+  text-align: center;
+  -webkit-appearance: none;
+  border-radius: 2px;
+}
+.nav-btn:disabled { background: #aaa; }
+
+#dots { text-align: center; }
+#dots .d {
+  display: inline-block;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  margin: 0 3px;
+}
+#dots .d.on { background: #000; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div id="team-name"></div>
+  <div id="inning-lbl"></div>
+</div>
+
+<div id="main">
+
+  <!-- ── DIAMOND ── -->
+  <div id="diamond-panel">
+    <svg id="diamond-svg" viewBox="0 0 320 390" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Outfield boundary arc (dashed) -->
+      <path d="M 18,182 Q 160,15 302,182"
+            fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="7,4"/>
+
+      <!-- Foul lines (light, dashed) -->
+      <line x1="160" y1="342" x2="18"  y2="182" stroke="#555" stroke-width="1" stroke-dasharray="5,5"/>
+      <line x1="160" y1="342" x2="302" y2="182" stroke="#555" stroke-width="1" stroke-dasharray="5,5"/>
+
+      <!-- Infield dirt fill -->
+      <polygon points="160,342 257,242 160,142 63,242"
+               fill="#f3ead8" stroke="#000" stroke-width="2"/>
+
+      <!-- Basepath lines (inside diamond, lighter) -->
+      <line x1="160" y1="342" x2="257" y2="242" stroke="#c8a96e" stroke-width="1"/>
+      <line x1="257" y1="242" x2="160" y2="142" stroke="#c8a96e" stroke-width="1"/>
+      <line x1="160" y1="142" x2="63"  y2="242" stroke="#c8a96e" stroke-width="1"/>
+      <line x1="63"  y1="242" x2="160" y2="342" stroke="#c8a96e" stroke-width="1"/>
+
+      <!-- ── BASES ── -->
+      <!-- Home plate (pentagon) -->
+      <polygon points="160,352 169,342 166,332 154,332 151,342" fill="#000"/>
+      <!-- 1st base -->
+      <rect x="250" y="235" width="14" height="14" fill="#fff" stroke="#000" stroke-width="2"/>
+      <!-- 2nd base -->
+      <rect x="153" y="135" width="14" height="14" fill="#fff" stroke="#000" stroke-width="2"/>
+      <!-- 3rd base -->
+      <rect x="56" y="235" width="14" height="14" fill="#fff" stroke="#000" stroke-width="2"/>
+
+      <!-- Pitcher's mound -->
+      <circle cx="160" cy="227" r="7" fill="#c8a96e" stroke="#000" stroke-width="1.5"/>
+
+      <!-- ── POSITION LABELS (filled by JS) ── -->
+      <g id="pos-g" font-family="Georgia, 'Times New Roman', serif"></g>
+
+    </svg>
+  </div>
+
+  <!-- ── BATTING + BENCH ── -->
+  <div id="batting-panel">
+    <h3>Batting Order</h3>
+    <ul id="bat-list"></ul>
+    <div id="bench-wrap">
+      <h4>Bench</h4>
+      <ul id="bench-list"></ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── FOOTER / NAV ── -->
+<div id="footer">
+  <button class="nav-btn" id="btn-prev" onclick="go(-1)">&#9664; PREV</button>
+  <div id="dots"></div>
+  <button class="nav-btn" id="btn-next" onclick="go(1)">NEXT &#9654;</button>
+</div>
+
+<script>
+// ================================================================
+//   ✏️  EDIT YOUR LINEUP HERE
+// ================================================================
+
+var GAME = {
+
+  teamName: "Raptors",   // ← Your team name
+
+  // All players in batting order (1 through however many you have).
+  batting: [
+    "Gus",      //  1
+    "AJ",       //  2
+    "James",    //  3
+    "Connor",   //  4
+    "Ollie",    //  5
+    "Pharoh",   //  6
+    "Everett",  //  7
+    "Dash",     //  8
+    "Lucas",    //  9
+    "Shravan",  // 10
+    "Henry",    // 11
+    "Thayne",   // 12
+    "Wells"     // 13
+  ],
+
+  // One entry per inning.
+  // Field keys: pitcher, catcher, first, second, third, shortstop,
+  //             leftField, leftCenterField, centerField, rightCenterField, rightField
+  // bench: list players sitting that inning (up to however many you have).
+  innings: [
+    { // ── INNING 1 ──
+      pitcher:          "Ollie",
+      catcher:          "Gus",
+      first:            "Connor",
+      second:           "Dash",
+      third:            "Henry",
+      shortstop:        "Lucas",
+      leftField:        "Wells",
+      leftCenterField:  "James",
+      rightCenterField: "Pharoh",
+      rightField:       "Everett",
+      bench: ["AJ", "Shravan", "Thayne"]
+    },
+    { // ── INNING 2 ──
+      pitcher:          "Pharoh",
+      catcher:          "Gus",
+      first:            "Connor",
+      second:           "Dash",
+      third:            "AJ",
+      shortstop:        "Lucas",
+      leftField:        "Shravan",
+      leftCenterField:  "James",
+      rightCenterField: "Henry",
+      rightField:       "Thayne",
+      bench: ["Ollie", "Everett", "Wells"]
+    },
+    { // ── INNING 3 ──
+      pitcher:          "Everett",
+      catcher:          "Gus",
+      first:            "Pharoh",
+      second:           "Shravan",
+      third:            "AJ",
+      shortstop:        "James",
+      leftField:        "Thayne",
+      leftCenterField:  "Lucas",
+      rightCenterField: "Ollie",
+      rightField:       "Wells",
+      bench: ["Connor", "Dash", "Henry"]
+    },
+    { // ── INNING 4 ──
+      pitcher:          "Connor",
+      catcher:          "AJ",
+      first:            "Ollie",
+      third:            "Wells",
+      shortstop:        "Everett",
+      leftField:        "Thayne",
+      leftCenterField:  "Dash",
+      rightCenterField: "Shravan",
+      rightField:       "Henry",
+      bench: ["Gus", "James", "Pharoh", "Lucas"]
+    }
+  ]
+
+};
+
+// ================================================================
+//   ⚙️  APP CODE — no need to edit below this line
+// ================================================================
+
+// SVG (x, y) = center of label; abbr = abbreviation shown above name
+var POS = {
+  leftField:        { abbr: "LF",  x: 52,  y: 142 },
+  leftCenterField:  { abbr: "LCF", x: 118, y: 75  },
+  rightCenterField: { abbr: "RCF", x: 202, y: 75  },
+  rightField:       { abbr: "RF",  x: 268, y: 142 },
+  shortstop:        { abbr: "SS",  x: 103, y: 207 },
+  second:           { abbr: "2B",  x: 215, y: 197 },
+  pitcher:          { abbr: "P",   x: 160, y: 252 },
+  third:            { abbr: "3B",  x: 63,  y: 272 },
+  first:            { abbr: "1B",  x: 257, y: 272 },
+  catcher:          { abbr: "C",   x: 160, y: 375 }
+};
+
+var ABBR = {
+  pitcher:'P', catcher:'C', first:'1B', second:'2B', third:'3B',
+  shortstop:'SS', leftField:'LF', leftCenterField:'LCF',
+  rightCenterField:'RCF', rightField:'RF'
+};
+
+var cur = 0;
+
+function makePosLabel(abbr, name, x, y) {
+  var w = Math.max(name.length * 9 + 10, 40);
+  var h = 36;
+  return (
+    '<rect x="' + (x - w/2) + '" y="' + (y - 22) + '" width="' + w + '" height="' + h + '"' +
+    ' fill="white" fill-opacity="0.88" rx="2"/>' +
+    '<text x="' + x + '" y="' + (y - 10) + '"' +
+    ' font-size="11" font-weight="bold" fill="#555" text-anchor="middle">' + abbr + '</text>' +
+    '<text x="' + x + '" y="' + (y + 8) + '"' +
+    ' font-size="16" fill="#000" text-anchor="middle">' + name + '</text>'
+  );
+}
+
+function render() {
+  var inn = GAME.innings[cur];
+
+  // ── Diamond labels ──
+  var svg = '';
+  for (var pos in POS) {
+    var p = POS[pos];
+    svg += makePosLabel(p.abbr, inn[pos] || '—', p.x, p.y);
+  }
+  document.getElementById('pos-g').innerHTML = svg;
+
+  // ── Batting order (with field position badge) ──
+  var fieldMap = {};
+  for (var p in inn) {
+    if (p !== 'bench' && inn[p]) fieldMap[inn[p]] = p;
+  }
+
+  var html = '';
+  for (var i = 0; i < GAME.batting.length; i++) {
+    var name = GAME.batting[i];
+    var spot = fieldMap[name];
+    var badge = spot ? '<span class="pos">' + ABBR[spot] + '</span>' : '';
+    html += '<li><span class="num">' + (i + 1) + '.</span>&nbsp;' + name + badge + '</li>';
+  }
+  document.getElementById('bat-list').innerHTML = html;
+
+  // ── Bench slots ──
+  var benchPlayers = inn.bench || [];
+  var benchHtml = '';
+  // Show at least 2 slots even if empty
+  var slots = Math.max(benchPlayers.length, 2);
+  for (var i = 0; i < slots; i++) {
+    if (benchPlayers[i]) {
+      benchHtml += '<li><span class="bnum">' + (i + 1) + '.</span>' + benchPlayers[i] + '</li>';
+    } else {
+      benchHtml += '<li class="empty"><span class="bnum">' + (i + 1) + '.</span>—</li>';
+    }
+  }
+  document.getElementById('bench-list').innerHTML = benchHtml;
+
+  // ── Header ──
+  document.getElementById('team-name').textContent = GAME.teamName;
+  document.getElementById('inning-lbl').textContent =
+    'INNING ' + (cur + 1) + ' OF ' + GAME.innings.length;
+
+  // ── Progress dots ──
+  var dots = '';
+  for (var i = 0; i < GAME.innings.length; i++) {
+    dots += '<span class="d' + (i === cur ? ' on' : '') + '"></span>';
+  }
+  document.getElementById('dots').innerHTML = dots;
+
+  // ── Nav buttons ──
+  document.getElementById('btn-prev').disabled = (cur === 0);
+  document.getElementById('btn-next').disabled = (cur === GAME.innings.length - 1);
+}
+
+function go(dir) {
+  var next = cur + dir;
+  if (next >= 0 && next < GAME.innings.length) {
+    cur = next;
+    render();
+  }
+}
+
+render();
+</script>
+</body>
+</html>
