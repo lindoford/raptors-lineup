@@ -325,24 +325,24 @@ var GAME = {
 
   // All players in batting order (1 through however many you have).
   batting: [
-    "Gus",      //  1
-    "AJ",       //  2
-    "James",    //  3
-    "Connor",   //  4
-    "Ollie",    //  5
-    "Pharoh",   //  6
-    "Everett",  //  7
-    "Dash",     //  8
+    "Connor",   //  1
+    "Ollie",    //  2
+    "Pharoh",   //  3
+    "Gus",      //  4
+    "James",    //  5
+    "Dash",     //  6
+    "Wells",    //  7
+    "Everett",  //  8
     "Lucas",    //  9
-    "Shravan",  // 10
+    "AJ",       // 10
     "Henry",    // 11
-    "Thayne",   // 12
-    "Wells"     // 13
+    "Shravan",  // 12
+    "Thayne"    // 13
   ],
 
   // One entry per inning.
   // Field keys: pitcher, catcher, first, second, third, shortstop,
-  //             leftField, leftCenterField, centerField, rightCenterField, rightField
+  //             leftField, leftCenterField, rightCenterField, rightField
   // bench: list players sitting that inning (up to however many you have).
   innings: [
     { // ── INNING 1 ──
@@ -369,7 +369,7 @@ var GAME = {
       leftCenterField:  "James",
       rightCenterField: "Henry",
       rightField:       "Thayne",
-      bench: ["Ollie", "Everett", "Wells"]
+      bench: ["Ollie", "Wells", "Everett"]
     },
     { // ── INNING 3 ──
       pitcher:          "Everett",
@@ -388,13 +388,14 @@ var GAME = {
       pitcher:          "Connor",
       catcher:          "AJ",
       first:            "Ollie",
+      second:           "Dash",
       third:            "Wells",
       shortstop:        "Everett",
       leftField:        "Thayne",
-      leftCenterField:  "Dash",
+      leftCenterField:  "Lucas",
       rightCenterField: "Shravan",
       rightField:       "Henry",
-      bench: ["Gus", "James", "Pharoh", "Lucas"]
+      bench: ["Pharoh", "Gus", "James"]
     }
   ]
 
