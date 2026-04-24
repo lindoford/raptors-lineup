@@ -191,6 +191,58 @@ body {
   margin: 0 3px;
 }
 #dots .d.on { background: #000; }
+
+/* ── PHONE LAYOUT (portrait screens ≤ 480px — iPhone etc.) ── */
+@media screen and (max-width: 480px) {
+  body { overflow: auto; height: auto; }
+
+  #main {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    overflow: visible;
+    height: auto;
+  }
+
+  #diamond-panel {
+    width: 100%;
+    height: 56vw;
+    min-height: 260px;
+    border-right: none;
+    border-bottom: 2px solid #000;
+  }
+
+  #batting-panel {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 8px 12px;
+  }
+
+  #bat-list {
+    overflow: visible;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+  #bat-list li {
+    width: 50%;
+    font-size: 15px;
+    padding: 3px 4px;
+  }
+
+  #bench-list {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+  #bench-list li { width: 50%; font-size: 15px; padding: 3px 4px; }
+
+  #footer { position: static; }
+
+  .nav-btn { font-size: 20px; padding: 14px 28px; }
+}
 </style>
 </head>
 <body>
