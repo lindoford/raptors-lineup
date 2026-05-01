@@ -325,16 +325,19 @@ var GAME = {
 
   // All players in batting order (1 through however many you have).
   batting: [
-    "Everett",  //  1
+    "Connor",   //  1
     "Ollie",    //  2
-    "Pharoh",   //  3
-    "Gus",      //  4
+    "Gus",      //  3
+    "Pharoh",   //  4
     "James",    //  5
     "Dash",     //  6
-    "AJ",       //  7
-    "Henry",    //  8
-    "Shravan",  //  9
-    "Thayne"    // 10
+    "Wells",    //  7
+    "Everett",  //  8
+    "Lucas",    //  9
+    "AJ",       // 10
+    "Henry",    // 11
+    "Shravan",  // 12
+    "Thayne"    // 13
   ],
 
   // One entry per inning.
@@ -345,54 +348,80 @@ var GAME = {
     { // ── INNING 1 ──
       pitcher:          "Everett",
       catcher:          "Gus",
-      first:            "Pharoh",
+      first:            "Connor",
       second:           "Dash",
       third:            "Henry",
-      shortstop:        "James",
-      leftField:        "Shravan",
+      shortstop:        "Lucas",
+      leftField:        "Wells",
       leftCenterField:  "Ollie",
-      rightCenterField: "Thayne",
-      rightField:       "AJ",
-      bench: []
+      rightCenterField: "Pharoh",
+      rightField:       "James",
+      bench: ["AJ", "Shravan", "Thayne"]
     },
     { // ── INNING 2 ──
-      pitcher:          "Ollie",
+      pitcher:          "Everett",
       catcher:          "Gus",
-      first:            "Pharoh",
+      first:            "Connor",
       second:           "Dash",
       third:            "AJ",
-      shortstop:        "James",
+      shortstop:        "Lucas",
       leftField:        "Shravan",
-      leftCenterField:  "Henry",
-      rightCenterField: "Everett",
-      rightField:       "Thayne",
-      bench: []
+      leftCenterField:  "James",
+      rightCenterField: "Thayne",
+      rightField:       "Henry",
+      bench: ["Ollie", "Pharoh", "Wells"]
     },
     { // ── INNING 3 ──
-      pitcher:          "Pharoh",
-      catcher:          "Gus",
-      first:            "Ollie",
+      pitcher:          "Ollie",
+      catcher:          "AJ",
+      first:            "Pharoh",
       second:           "Dash",
-      third:            "AJ",
-      shortstop:        "Everett",
-      leftField:        "Shravan",
-      leftCenterField:  "Henry",
+      third:            "Gus",
+      shortstop:        "Lucas",
+      leftField:        "Thayne",
+      leftCenterField:  "Shravan",
       rightCenterField: "James",
-      rightField:       "Thayne",
-      bench: []
+      rightField:       "Wells",
+      bench: ["Connor", "Everett", "Henry"]
     },
     { // ── INNING 4 ──
-      pitcher:          "James",
+      pitcher:          "Ollie",
       catcher:          "AJ",
-      first:            "Ollie",
+      first:            "Pharoh",
       second:           "Shravan",
       third:            "Gus",
       shortstop:        "Everett",
-      leftField:        "Dash",
-      leftCenterField:  "Henry",
-      rightCenterField: "Pharoh",
+      leftField:        "Henry",
+      leftCenterField:  "Wells",
+      rightCenterField: "Connor",
       rightField:       "Thayne",
-      bench: []
+      bench: ["James", "Dash", "Lucas"]
+    },
+    { // ── INNING 5 ──
+      pitcher:          "Connor",
+      catcher:          "James",
+      first:            "Ollie",
+      second:           "Shravan",
+      third:            "Wells",
+      shortstop:        "Pharoh",
+      leftField:        "Lucas",
+      leftCenterField:  "Everett",
+      rightCenterField: "Henry",
+      rightField:       "Dash",
+      bench: ["Gus", "AJ", "Thayne"]
+    },
+    { // ── INNING 6 ──
+      pitcher:          "Connor",
+      catcher:          "James",
+      first:            "Ollie",
+      second:           "Everett",
+      third:            "Thayne",
+      shortstop:        "Pharoh",
+      leftField:        "Lucas",
+      leftCenterField:  "Wells",
+      rightCenterField: "AJ",
+      rightField:       "Gus",
+      bench: ["Dash", "Henry", "Shravan"]
     }
   ]
 
