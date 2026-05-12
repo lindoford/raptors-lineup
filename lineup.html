@@ -220,13 +220,13 @@ body {
 
   #bat-list {
     overflow: visible;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
+    -webkit-column-count: 2;
+    column-count: 2;
+    column-gap: 0;
   }
   #bat-list li {
-    width: 50%;
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid;
     font-size: 15px;
     padding: 3px 4px;
   }
@@ -380,8 +380,8 @@ var GAME = {
       shortstop:        "James",
       leftField:        "Wells",
       leftCenterField:  "Ollie",
-      rightCenterField: "Dash",
-      rightField:       "Thayne",
+      rightCenterField: "Thayne",
+      rightField:       "Dash",
       bench: ["Connor", "Lucas", "AJ"]
     },
     { // ── INNING 4 ──
@@ -391,10 +391,10 @@ var GAME = {
       second:           "Shravan",
       third:            "Wells",
       shortstop:        "James",
-      leftField:        "Lucas",
+      leftField:        "Thayne",
       leftCenterField:  "Everett",
       rightCenterField: "Henry",
-      rightField:       "Thayne",
+      rightField:       "Lucas",
       bench: ["Pharoh", "Gus", "Dash"]
     }
   ]
