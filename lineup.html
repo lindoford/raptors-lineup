@@ -615,16 +615,6 @@ renderMusic();
 //   🎵  MUSIC PAGE FUNCTIONS
 // ================================================================
 
-// Spotify IFrame API — loads async; gives us seek() for precise start times
-var spotifyAPI = null;
-var activeController = null;
-window.onSpotifyIframeApiReady = function(IFrameAPI) { spotifyAPI = IFrameAPI; };
-(function() {
-  var s = document.createElement('script');
-  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
-  s.async = true;
-  document.head.appendChild(s);
-})();
 
 function buildMusicMap() {
   var map = {};
@@ -632,7 +622,7 @@ function buildMusicMap() {
   return map;
 }
 
-var musicMap = {};
+var musicMap = buildMusicMap();
 
 function renderMusic() {
   musicMap = buildMusicMap();
@@ -655,10 +645,6 @@ function renderMusic() {
 }
 
 function stopAllSongs() {
-  if (activeController) {
-    try { activeController.destroy(); } catch(e) {}
-    activeController = null;
-  }
   var opens = document.querySelectorAll('.music-embed.open');
   for (var j = 0; j < opens.length; j++) {
     opens[j].classList.remove('open');
@@ -683,24 +669,8 @@ function toggleSong(i) {
     embed.classList.add('open');
     icon.innerHTML = '&#9646;&#9646;';
 
-    // Always show the plain iframe so the player definitely appears
     embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
       'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
-
-    // Additionally try IFrame API for precise seeking, if it loaded and there's a non-zero start
-    if (spotifyAPI && entry.start > 0) {
-      var start = entry.start;
-      var iframe = embed.querySelector('iframe');
-      try {
-        spotifyAPI.createController(iframe, { uri: 'spotify:track:' + entry.track }, function(controller) {
-          activeController = controller;
-          controller.addListener('ready', function() {
-            controller.seek(start);
-            controller.play();
-          });
-        });
-      } catch(e) {}
-    }
   }
 }
 
