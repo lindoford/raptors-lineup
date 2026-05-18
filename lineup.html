@@ -403,8 +403,8 @@ var GAME = {
 
   // All players in batting order (1 through however many you have).
   batting: [
-    "Connor",   //  1
-    "Everett",  //  2
+    "Everett",  //  1
+    "Connor",   //  2
     "Lucas",    //  3
     "Pharoh",   //  4
     "Gus",      //  5
@@ -687,7 +687,13 @@ function toggleSong(i) {
       var holder = document.createElement('div');
       embed.appendChild(holder);
       var start = entry.start;
+      var fallbackTimer = setTimeout(function() {
+        // createController didn't fire — track may be unavailable; use plain iframe
+        embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
+          'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+      }, 5000);
       spotifyAPI.createController(holder, { uri: 'spotify:track:' + entry.track }, function(controller) {
+        clearTimeout(fallbackTimer);
         activeController = controller;
         controller.addListener('ready', function() {
           controller.play();
