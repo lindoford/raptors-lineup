@@ -683,23 +683,23 @@ function toggleSong(i) {
     embed.classList.add('open');
     icon.innerHTML = '&#9646;&#9646;';
 
-    if (spotifyAPI) {
-      // IFrame API: creates its own iframe and lets us seek() precisely
-      var holder = document.createElement('div');
-      holder.style.cssText = 'width:100%;height:80px;overflow:hidden;';
-      embed.appendChild(holder);
+    // Always show the plain iframe so the player definitely appears
+    embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
+      'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+
+    // Additionally try IFrame API for precise seeking, if it loaded and there's a non-zero start
+    if (spotifyAPI && entry.start > 0) {
       var start = entry.start;
-      spotifyAPI.createController(holder, { uri: 'spotify:track:' + entry.track, height: '80' }, function(controller) {
-        activeController = controller;
-        controller.addListener('ready', function() {
-          if (start > 0) controller.seek(start);
-          controller.play();
+      var iframe = embed.querySelector('iframe');
+      try {
+        spotifyAPI.createController(iframe, { uri: 'spotify:track:' + entry.track }, function(controller) {
+          activeController = controller;
+          controller.addListener('ready', function() {
+            controller.seek(start);
+            controller.play();
+          });
         });
-      });
-    } else {
-      // Fallback: plain iframe (API not loaded yet — start time may be approximate)
-      embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
-        'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+      } catch(e) {}
     }
   }
 }
