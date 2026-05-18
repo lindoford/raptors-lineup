@@ -690,8 +690,8 @@ function toggleSong(i) {
       spotifyAPI.createController(holder, { uri: 'spotify:track:' + entry.track }, function(controller) {
         activeController = controller;
         controller.addListener('ready', function() {
-          controller.seek(start);
           controller.play();
+          setTimeout(function() { controller.seek(start); }, 800);
         });
       });
     } else {
