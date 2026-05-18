@@ -244,25 +244,62 @@ body {
   }
   #bench-list li { width: 50%; font-size: 15px; padding: 3px 4px; }
 
-  #footer { position: static; }
+  #footer {
+    position: static;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 8px;
+  }
 
-  .nav-btn { font-size: 20px; padding: 14px 28px; }
+  /* Dots on their own full-width row, above the buttons */
+  #dots {
+    -webkit-order: -1;
+    order: -1;
+    width: 100%;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
+    padding: 2px 0;
+  }
+  #dots .d { margin: 0 5px; }
 
-  /* ── Music page ── */
+  .nav-btn { font-size: 14px; padding: 9px 18px; min-width: 0; }
+
+  /* ── Music button: circle, separate from nav ── */
   #music-toggle {
-    display: block;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 20px;
     font-family: Georgia, serif;
-    font-size: 18px;
     font-weight: bold;
-    padding: 11px 16px;
     background: #000;
     color: #fff;
     border: none;
     cursor: pointer;
-    border-radius: 2px;
     -webkit-appearance: none;
+    margin-left: 8px;
   }
-  #music-toggle.active { background: #444; }
+  #music-toggle.active {
+    background: #444;
+    border-radius: 4px;
+    width: auto;
+    height: auto;
+    padding: 9px 14px;
+    font-size: 14px;
+    margin-left: 8px;
+  }
   .music-row { border-bottom: 1px solid #ccc; }
   .music-row-btn {
     display: -webkit-flex; display: flex;
@@ -456,15 +493,15 @@ var MUSIC = [
   { name: "Everett", url: "https://open.spotify.com/embed/track/3Te8uLyit6X3ncNW8Fp3K2?t=4"  },
   { name: "Lucas",   url: "https://open.spotify.com/embed/track/0G21yYKMZoHa30cYVi1iA8?t=31" },
   { name: "Pharoh",  url: "https://open.spotify.com/embed/track/5sefrwZAWKKcKtQK4DPPwW?t=9"  },
-  { name: "Gus",     url: "https://open.spotify.com/embed/track/3dPQuX8Gs42Y7b454ybpMR"       },
-  { name: "Dash",    url: "https://open.spotify.com/embed/track/1H5tvpoApNDxvxDexoaAUo"       },
+  { name: "Gus",     url: "https://open.spotify.com/embed/track/3dPQuX8Gs42Y7b454ybpMR?t=0"    },
+  { name: "Dash",    url: "https://open.spotify.com/embed/track/1H5tvpoApNDxvxDexoaAUo?t=0"   },
   { name: "James",   url: "https://open.spotify.com/embed/track/12sXrSldiqCtB0vKYHNH29?t=5"  },
   { name: "Wells",   url: "https://open.spotify.com/embed/track/7LRMbd3LEoV5wZJvXT1Lwb?t=54" },
   { name: "Ollie",   url: "https://open.spotify.com/embed/track/4HIx4KL2XRilgBf6WzfLqI?t=16" },
   { name: "Henry",   url: "https://open.spotify.com/embed/track/7veBNI9hUkxOMCKqAQ0LIX?t=14" },
-  { name: "AJ",      url: "https://open.spotify.com/embed/track/1DIXPcTDzTj8ZMHt3PDt8p"       },
-  { name: "Shravan", url: "https://open.spotify.com/embed/track/0pqnGHJpmpxLKifKRmU6WP"       },
-  { name: "Thayne",  url: "https://open.spotify.com/embed/track/1zB4vmk8tFRmM9UULNzbLB"       }
+  { name: "AJ",      url: "https://open.spotify.com/embed/track/1DIXPcTDzTj8ZMHt3PDt8p?t=0"    },
+  { name: "Shravan", url: "https://open.spotify.com/embed/track/0pqnGHJpmpxLKifKRmU6WP?t=0"   },
+  { name: "Thayne",  url: "https://open.spotify.com/embed/track/1zB4vmk8tFRmM9UULNzbLB?t=0"   }
 ];
 
 // ================================================================
