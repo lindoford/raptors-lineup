@@ -615,6 +615,14 @@ renderMusic();
 //   🎵  MUSIC PAGE FUNCTIONS
 // ================================================================
 
+var spotifyAPI = null;
+window.onSpotifyIframeApiReady = function(IFrameAPI) { spotifyAPI = IFrameAPI; };
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
+  s.async = true;
+  document.head.appendChild(s);
+}());
 
 function buildMusicMap() {
   var map = {};
@@ -669,8 +677,22 @@ function toggleSong(i) {
     embed.classList.add('open');
     icon.innerHTML = '&#9646;&#9646;';
 
-    embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
-      'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    if (spotifyAPI) {
+      // IFrame API ready — creates player and lets us seek to exact position
+      var holder = document.createElement('div');
+      embed.appendChild(holder);
+      var start = entry.start;
+      spotifyAPI.createController(holder, { uri: 'spotify:track:' + entry.track }, function(controller) {
+        controller.addListener('ready', function() {
+          if (start > 0) controller.seek(start);
+          controller.play();
+        });
+      });
+    } else {
+      // API not loaded yet — plain iframe with ?t= as best effort
+      embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
+        'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    }
   }
 }
 
