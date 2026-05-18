@@ -615,6 +615,17 @@ renderMusic();
 //   🎵  MUSIC PAGE FUNCTIONS
 // ================================================================
 
+// Spotify IFrame API — loads async; gives us seek() for precise start times
+var spotifyAPI = null;
+var activeController = null;
+window.onSpotifyIframeApiReady = function(IFrameAPI) { spotifyAPI = IFrameAPI; };
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
+  s.async = true;
+  document.head.appendChild(s);
+})();
+
 function buildMusicMap() {
   var map = {};
   for (var i = 0; i < MUSIC.length; i++) map[MUSIC[i].name] = MUSIC[i];
@@ -644,6 +655,10 @@ function renderMusic() {
 }
 
 function stopAllSongs() {
+  if (activeController) {
+    try { activeController.destroy(); } catch(e) {}
+    activeController = null;
+  }
   var opens = document.querySelectorAll('.music-embed.open');
   for (var j = 0; j < opens.length; j++) {
     opens[j].classList.remove('open');
@@ -661,10 +676,31 @@ function toggleSong(i) {
   stopAllSongs();
 
   if (!isOpen) {
+    var name  = GAME.batting[i];
+    var entry = musicMap[name];
+    if (!entry) return;
+
     embed.classList.add('open');
-    embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
-      'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
     icon.innerHTML = '&#9646;&#9646;';
+
+    if (spotifyAPI) {
+      // IFrame API: creates its own iframe and lets us seek() precisely
+      var holder = document.createElement('div');
+      holder.style.cssText = 'width:100%;height:80px;overflow:hidden;';
+      embed.appendChild(holder);
+      var start = entry.start;
+      spotifyAPI.createController(holder, { uri: 'spotify:track:' + entry.track, height: '80' }, function(controller) {
+        activeController = controller;
+        controller.addListener('ready', function() {
+          if (start > 0) controller.seek(start);
+          controller.play();
+        });
+      });
+    } else {
+      // Fallback: plain iframe (API not loaded yet — start time may be approximate)
+      embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
+        'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    }
   }
 }
 
