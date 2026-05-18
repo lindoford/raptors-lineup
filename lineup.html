@@ -616,6 +616,7 @@ renderMusic();
 // ================================================================
 
 var spotifyAPI = null;
+var activeController = null;
 window.onSpotifyIframeApiReady = function(IFrameAPI) { spotifyAPI = IFrameAPI; };
 (function() {
   var s = document.createElement('script');
@@ -653,6 +654,10 @@ function renderMusic() {
 }
 
 function stopAllSongs() {
+  if (activeController) {
+    try { activeController.destroy(); } catch(e) {}
+    activeController = null;
+  }
   var opens = document.querySelectorAll('.music-embed.open');
   for (var j = 0; j < opens.length; j++) {
     opens[j].classList.remove('open');
@@ -683,6 +688,7 @@ function toggleSong(i) {
       embed.appendChild(holder);
       var start = entry.start;
       spotifyAPI.createController(holder, { uri: 'spotify:track:' + entry.track }, function(controller) {
+        activeController = controller;
         controller.addListener('ready', function() {
           if (start > 0) controller.seek(start);
           controller.play();
