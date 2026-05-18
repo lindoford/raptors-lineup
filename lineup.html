@@ -481,27 +481,27 @@ var GAME = {
 
 // ================================================================
 //   🎵  WALKOUT MUSIC  — update once per season (or as needed)
-//   To find a Spotify embed URL:
+//   To find a Spotify track ID:
 //     1. Find the song in Spotify
 //     2. Right-click → Share → Copy Song Link
-//     3. Replace open.spotify.com/track/ with open.spotify.com/embed/track/
-//     4. Add ?t=XX to start at XX seconds into the song
+//     3. The ID is the string after /track/ and before any ?
+//   start = seconds into the song to begin playback
 // ================================================================
 
 var MUSIC = [
-  { name: "Connor",  url: "https://open.spotify.com/embed/track/6eN1f9KNmiWEhpE2RhQqB5?t=20" },
-  { name: "Everett", url: "https://open.spotify.com/embed/track/3Te8uLyit6X3ncNW8Fp3K2?t=4"  },
-  { name: "Lucas",   url: "https://open.spotify.com/embed/track/0G21yYKMZoHa30cYVi1iA8?t=31" },
-  { name: "Pharoh",  url: "https://open.spotify.com/embed/track/5sefrwZAWKKcKtQK4DPPwW?t=9"  },
-  { name: "Gus",     url: "https://open.spotify.com/embed/track/3dPQuX8Gs42Y7b454ybpMR?t=0"    },
-  { name: "Dash",    url: "https://open.spotify.com/embed/track/1H5tvpoApNDxvxDexoaAUo?t=0"   },
-  { name: "James",   url: "https://open.spotify.com/embed/track/12sXrSldiqCtB0vKYHNH29?t=5"  },
-  { name: "Wells",   url: "https://open.spotify.com/embed/track/7LRMbd3LEoV5wZJvXT1Lwb?t=54" },
-  { name: "Ollie",   url: "https://open.spotify.com/embed/track/4HIx4KL2XRilgBf6WzfLqI?t=16" },
-  { name: "Henry",   url: "https://open.spotify.com/embed/track/7veBNI9hUkxOMCKqAQ0LIX?t=14" },
-  { name: "AJ",      url: "https://open.spotify.com/embed/track/1DIXPcTDzTj8ZMHt3PDt8p?t=0"    },
-  { name: "Shravan", url: "https://open.spotify.com/embed/track/0pqnGHJpmpxLKifKRmU6WP?t=0"   },
-  { name: "Thayne",  url: "https://open.spotify.com/embed/track/1zB4vmk8tFRmM9UULNzbLB?t=0"   }
+  { name: "Connor",  track: "6eN1f9KNmiWEhpE2RhQqB5", start: 20 },
+  { name: "Everett", track: "3Te8uLyit6X3ncNW8Fp3K2", start: 4  },
+  { name: "Lucas",   track: "0G21yYKMZoHa30cYVi1iA8", start: 31 },
+  { name: "Pharoh",  track: "5sefrwZAWKKcKtQK4DPPwW", start: 9  },
+  { name: "Gus",     track: "3dPQuX8Gs42Y7b454ybpMR", start: 0  },
+  { name: "Dash",    track: "1H5tvpoApNDxvxDexoaAUo", start: 0  },
+  { name: "James",   track: "12sXrSldiqCtB0vKYHNH29", start: 5  },
+  { name: "Wells",   track: "7LRMbd3LEoV5wZJvXT1Lwb", start: 54 },
+  { name: "Ollie",   track: "4HIx4KL2XRilgBf6WzfLqI", start: 16 },
+  { name: "Henry",   track: "7veBNI9hUkxOMCKqAQ0LIX", start: 14 },
+  { name: "AJ",      track: "1DIXPcTDzTj8ZMHt3PDt8p", start: 0  },
+  { name: "Shravan", track: "0pqnGHJpmpxLKifKRmU6WP", start: 0  },
+  { name: "Thayne",  track: "1zB4vmk8tFRmM9UULNzbLB", start: 0  }
 ];
 
 // ================================================================
@@ -615,37 +615,53 @@ renderMusic();
 //   🎵  MUSIC PAGE FUNCTIONS
 // ================================================================
 
+// Spotify IFrame Controller API
+var spotifyAPI = null;
+var activeController = null;
+
+window.onSpotifyIframeApiReady = function(IFrameAPI) {
+  spotifyAPI = IFrameAPI;
+};
+
+// Load the Spotify IFrame API script
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
+  s.async = true;
+  document.head.appendChild(s);
+})();
+
 function buildMusicMap() {
   var map = {};
-  for (var i = 0; i < MUSIC.length; i++) map[MUSIC[i].name] = MUSIC[i].url;
+  for (var i = 0; i < MUSIC.length; i++) map[MUSIC[i].name] = MUSIC[i];
   return map;
 }
 
+var musicMap = buildMusicMap();
+
 function renderMusic() {
-  var map = buildMusicMap();
   var html = '';
   for (var i = 0; i < GAME.batting.length; i++) {
     var name = GAME.batting[i];
-    var url = map[name];
-    if (!url) continue;
+    var entry = musicMap[name];
+    if (!entry) continue;
     html += '<div class="music-row">' +
       '<button class="music-row-btn" onclick="toggleSong(' + i + ')">' +
         '<span class="mnum">' + (i + 1) + '.</span>' +
         '<span class="mname">' + name + '</span>' +
         '<span class="micon" id="micon-' + i + '">&#9654;</span>' +
       '</button>' +
-      '<div class="music-embed" id="membed-' + i + '" data-url="' + url + '"></div>' +
+      '<div class="music-embed" id="membed-' + i + '"></div>' +
     '</div>';
   }
   document.getElementById('music-panel').innerHTML = html;
 }
 
-function toggleSong(i) {
-  var embed = document.getElementById('membed-' + i);
-  var icon  = document.getElementById('micon-' + i);
-  var isOpen = embed.classList.contains('open');
-
-  // Close all open embeds
+function stopAllSongs() {
+  if (activeController) {
+    try { activeController.destroy(); } catch(e) {}
+    activeController = null;
+  }
   var opens = document.querySelectorAll('.music-embed.open');
   for (var j = 0; j < opens.length; j++) {
     opens[j].classList.remove('open');
@@ -653,13 +669,42 @@ function toggleSong(i) {
   }
   var icons = document.querySelectorAll('.micon');
   for (var j = 0; j < icons.length; j++) icons[j].innerHTML = '&#9654;';
+}
 
-  // If it wasn't open before, open it now
+function toggleSong(i) {
+  var embed = document.getElementById('membed-' + i);
+  var icon  = document.getElementById('micon-' + i);
+  var isOpen = embed.classList.contains('open');
+
+  stopAllSongs();
+
   if (!isOpen) {
+    var name  = GAME.batting[i];
+    var entry = musicMap[name];
+    if (!entry) return;
+
     embed.classList.add('open');
-    embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
-      'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
     icon.innerHTML = '&#9646;&#9646;';
+
+    var container = document.createElement('div');
+    embed.appendChild(container);
+
+    if (spotifyAPI) {
+      // Use the IFrame Controller API for precise seeking
+      var start = entry.start; // capture for closure
+      spotifyAPI.createController(container, { uri: 'spotify:track:' + entry.track }, function(controller) {
+        activeController = controller;
+        controller.addListener('ready', function() {
+          if (start > 0) controller.seek(start);
+          controller.play();
+        });
+      });
+    } else {
+      // Fallback: raw iframe with ?t= param (API not loaded yet)
+      container.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' +
+        entry.track + '?t=' + entry.start + '" ' +
+        'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    }
   }
 }
 
@@ -672,7 +717,8 @@ function toggleMusic() {
   var dots   = document.getElementById('dots');
 
   if (panel.style.display === 'block') {
-    // Return to lineup
+    // Return to lineup — stop any playing song
+    stopAllSongs();
     panel.style.display = 'none';
     main.style.display  = '';
     prev.style.display  = '';
@@ -680,14 +726,6 @@ function toggleMusic() {
     dots.style.display  = '';
     btn.innerHTML = '&#127925;';
     btn.classList.remove('active');
-    // Stop any playing song
-    var opens = document.querySelectorAll('.music-embed.open');
-    for (var j = 0; j < opens.length; j++) {
-      opens[j].classList.remove('open');
-      opens[j].innerHTML = '';
-    }
-    var icons = document.querySelectorAll('.micon');
-    for (var j = 0; j < icons.length; j++) icons[j].innerHTML = '&#9654;';
   } else {
     // Open music page
     main.style.display  = 'none';
