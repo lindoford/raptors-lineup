@@ -182,6 +182,11 @@ body {
 }
 .nav-btn:disabled { background: #aaa; }
 
+/* ── WALKOUT MUSIC (hidden on Kindle, shown on iPhone via media query) ── */
+#music-toggle { display: none; }
+#music-panel  { display: none; padding: 8px 12px; overflow-y: auto;
+                -webkit-overflow-scrolling: touch; }
+
 #dots { text-align: center; }
 #dots .d {
   display: inline-block;
@@ -242,6 +247,38 @@ body {
   #footer { position: static; }
 
   .nav-btn { font-size: 20px; padding: 14px 28px; }
+
+  /* ── Music page ── */
+  #music-toggle {
+    display: block;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 11px 16px;
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  #music-toggle.active { background: #444; }
+  .music-row { border-bottom: 1px solid #ccc; }
+  .music-row-btn {
+    display: -webkit-flex; display: flex;
+    -webkit-align-items: center; align-items: center;
+    width: 100%; background: none; border: none;
+    padding: 12px 4px;
+    font-family: Georgia, serif; font-size: 16px;
+    text-align: left; cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.08);
+  }
+  .mnum  { font-weight: bold; min-width: 28px; }
+  .mname { -webkit-flex: 1; flex: 1; }
+  .micon { font-size: 20px; }
+  .music-embed { display: none; padding: 2px 0 10px; }
+  .music-embed.open { display: block; }
+  .music-embed iframe { width: 100%; height: 80px; border: none; border-radius: 6px; }
 }
 </style>
 </head>
@@ -307,11 +344,15 @@ body {
 
 </div>
 
+<!-- ── WALKOUT MUSIC PANEL (iPhone only) ── -->
+<div id="music-panel"></div>
+
 <!-- ── FOOTER / NAV ── -->
 <div id="footer">
   <button class="nav-btn" id="btn-prev" onclick="go(-1)">&#9664; PREV</button>
   <div id="dots"></div>
   <button class="nav-btn" id="btn-next" onclick="go(1)">NEXT &#9654;</button>
+  <button class="nav-btn" id="music-toggle" onclick="toggleMusic()">&#127925;</button>
 </div>
 
 <script>
@@ -400,6 +441,31 @@ var GAME = {
   ]
 
 };
+
+// ================================================================
+//   🎵  WALKOUT MUSIC  — update once per season (or as needed)
+//   To find a Spotify embed URL:
+//     1. Find the song in Spotify
+//     2. Right-click → Share → Copy Song Link
+//     3. Replace open.spotify.com/track/ with open.spotify.com/embed/track/
+//     4. Add ?t=XX to start at XX seconds into the song
+// ================================================================
+
+var MUSIC = [
+  { name: "Connor",  url: "https://open.spotify.com/embed/track/6eN1f9KNmiWEhpE2RhQqB5?t=20" },
+  { name: "Everett", url: "https://open.spotify.com/embed/track/3Te8uLyit6X3ncNW8Fp3K2?t=4"  },
+  { name: "Lucas",   url: "https://open.spotify.com/embed/track/0G21yYKMZoHa30cYVi1iA8?t=31" },
+  { name: "Pharoh",  url: "https://open.spotify.com/embed/track/5sefrwZAWKKcKtQK4DPPwW?t=9"  },
+  { name: "Gus",     url: "https://open.spotify.com/embed/track/3dPQuX8Gs42Y7b454ybpMR"       },
+  { name: "Dash",    url: "https://open.spotify.com/embed/track/1H5tvpoApNDxvxDexoaAUo"       },
+  { name: "James",   url: "https://open.spotify.com/embed/track/12sXrSldiqCtB0vKYHNH29?t=5"  },
+  { name: "Wells",   url: "https://open.spotify.com/embed/track/7LRMbd3LEoV5wZJvXT1Lwb?t=54" },
+  { name: "Ollie",   url: "https://open.spotify.com/embed/track/4HIx4KL2XRilgBf6WzfLqI?t=16" },
+  { name: "Henry",   url: "https://open.spotify.com/embed/track/7veBNI9hUkxOMCKqAQ0LIX?t=14" },
+  { name: "AJ",      url: "https://open.spotify.com/embed/track/1DIXPcTDzTj8ZMHt3PDt8p"       },
+  { name: "Shravan", url: "https://open.spotify.com/embed/track/0pqnGHJpmpxLKifKRmU6WP"       },
+  { name: "Thayne",  url: "https://open.spotify.com/embed/track/1zB4vmk8tFRmM9UULNzbLB"       }
+];
 
 // ================================================================
 //   ⚙️  APP CODE — no need to edit below this line
@@ -506,6 +572,96 @@ function go(dir) {
 }
 
 render();
+renderMusic();
+
+// ================================================================
+//   🎵  MUSIC PAGE FUNCTIONS
+// ================================================================
+
+function buildMusicMap() {
+  var map = {};
+  for (var i = 0; i < MUSIC.length; i++) map[MUSIC[i].name] = MUSIC[i].url;
+  return map;
+}
+
+function renderMusic() {
+  var map = buildMusicMap();
+  var html = '';
+  for (var i = 0; i < GAME.batting.length; i++) {
+    var name = GAME.batting[i];
+    var url = map[name];
+    if (!url) continue;
+    html += '<div class="music-row">' +
+      '<button class="music-row-btn" onclick="toggleSong(' + i + ')">' +
+        '<span class="mnum">' + (i + 1) + '.</span>' +
+        '<span class="mname">' + name + '</span>' +
+        '<span class="micon" id="micon-' + i + '">&#9654;</span>' +
+      '</button>' +
+      '<div class="music-embed" id="membed-' + i + '" data-url="' + url + '"></div>' +
+    '</div>';
+  }
+  document.getElementById('music-panel').innerHTML = html;
+}
+
+function toggleSong(i) {
+  var embed = document.getElementById('membed-' + i);
+  var icon  = document.getElementById('micon-' + i);
+  var isOpen = embed.classList.contains('open');
+
+  // Close all open embeds
+  var opens = document.querySelectorAll('.music-embed.open');
+  for (var j = 0; j < opens.length; j++) {
+    opens[j].classList.remove('open');
+    opens[j].innerHTML = '';
+  }
+  var icons = document.querySelectorAll('.micon');
+  for (var j = 0; j < icons.length; j++) icons[j].innerHTML = '&#9654;';
+
+  // If it wasn't open before, open it now
+  if (!isOpen) {
+    embed.classList.add('open');
+    embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
+      'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    icon.innerHTML = '&#9646;&#9646;';
+  }
+}
+
+function toggleMusic() {
+  var main   = document.getElementById('main');
+  var panel  = document.getElementById('music-panel');
+  var btn    = document.getElementById('music-toggle');
+  var prev   = document.getElementById('btn-prev');
+  var next   = document.getElementById('btn-next');
+  var dots   = document.getElementById('dots');
+
+  if (panel.style.display === 'block') {
+    // Return to lineup
+    panel.style.display = 'none';
+    main.style.display  = '';
+    prev.style.display  = '';
+    next.style.display  = '';
+    dots.style.display  = '';
+    btn.innerHTML = '&#127925;';
+    btn.classList.remove('active');
+    // Stop any playing song
+    var opens = document.querySelectorAll('.music-embed.open');
+    for (var j = 0; j < opens.length; j++) {
+      opens[j].classList.remove('open');
+      opens[j].innerHTML = '';
+    }
+    var icons = document.querySelectorAll('.micon');
+    for (var j = 0; j < icons.length; j++) icons[j].innerHTML = '&#9654;';
+  } else {
+    // Open music page
+    main.style.display  = 'none';
+    panel.style.display = 'block';
+    prev.style.display  = 'none';
+    next.style.display  = 'none';
+    dots.style.display  = 'none';
+    btn.innerHTML = '&#9664; Lineup';
+    btn.classList.add('active');
+  }
+}
 </script>
 </body>
 </html>
