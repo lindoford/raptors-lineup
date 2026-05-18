@@ -495,10 +495,10 @@ var MUSIC = [
   { name: "Pharoh",  track: "5sefrwZAWKKcKtQK4DPPwW", start: 9  },
   { name: "Gus",     track: "3dPQuX8Gs42Y7b454ybpMR", start: 0  },
   { name: "Dash",    track: "1H5tvpoApNDxvxDexoaAUo", start: 0  },
-  { name: "James",   track: "12sXrSldiqCtB0vKYHNH29", start: 5  },
+  { name: "James",   track: "12sXrSIdiqCtB0vKYHNH29", start: 5  },
   { name: "Wells",   track: "7LRMbd3LEoV5wZJvXT1Lwb", start: 54 },
   { name: "Ollie",   track: "4HIx4KL2XRilgBf6WzfLqI", start: 16 },
-  { name: "Henry",   track: "7veBNI9hUkxOMCKqAQ0LIX", start: 14 },
+  { name: "Henry",   track: "7veBNI9hUkxOMCKqAQ0LlX", start: 14 },
   { name: "AJ",      track: "1DIXPcTDzTj8ZMHt3PDt8p", start: 0  },
   { name: "Shravan", track: "0pqnGHJpmpxLKifKRmU6WP", start: 0  },
   { name: "Thayne",  track: "1zB4vmk8tFRmM9UULNzbLB", start: 0  }
@@ -654,10 +654,7 @@ function renderMusic() {
 }
 
 function stopAllSongs() {
-  if (activeController) {
-    try { activeController.destroy(); } catch(e) {}
-    activeController = null;
-  }
+  activeController = null;
   var opens = document.querySelectorAll('.music-embed.open');
   for (var j = 0; j < opens.length; j++) {
     opens[j].classList.remove('open');
@@ -696,8 +693,8 @@ function toggleSong(i) {
         clearTimeout(fallbackTimer);
         activeController = controller;
         controller.addListener('ready', function() {
+          controller.seek(start);
           controller.play();
-          setTimeout(function() { controller.seek(start); }, 800);
         });
       });
     } else {
