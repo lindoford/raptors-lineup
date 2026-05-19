@@ -315,7 +315,7 @@ body {
   .micon { font-size: 20px; }
   .music-embed { display: none; padding: 2px 0 10px; }
   .music-embed.open { display: block; }
-  .music-embed iframe { width: 100%; height: 80px; border: none; border-radius: 6px; }
+  .music-embed iframe { width: 100%; height: 120px; border: none; border-radius: 6px; }
 }
 </style>
 </head>
@@ -481,27 +481,26 @@ var GAME = {
 
 // ================================================================
 //   🎵  WALKOUT MUSIC  — update once per season (or as needed)
-//   To find a Spotify track ID:
-//     1. Find the song in Spotify
-//     2. Right-click → Share → Copy Song Link
-//     3. The ID is the string after /track/ and before any ?
+//   To find a YouTube video ID:
+//     1. Open the song on YouTube
+//     2. Copy the URL — the ID is the part after ?v= or after youtu.be/
 //   start = seconds into the song to begin playback
 // ================================================================
 
 var MUSIC = [
-  { name: "Connor",  track: "6eN1f9KNmiWEhpE2RhQqB5", start: 20 },
-  { name: "Everett", track: "3Te8uLyit6X3ncNW8Fp3K2", start: 4  },
-  { name: "Lucas",   track: "0G21yYKMZoHa30cYVi1iA8", start: 31 },
-  { name: "Pharoh",  track: "5sefrwZAWKKcKtQK4DPPwW", start: 9  },
-  { name: "Gus",     track: "3dPQuX8Gs42Y7b454ybpMR", start: 0  },
-  { name: "Dash",    track: "1H5tvpoApNDxvxDexoaAUo", start: 0  },
-  { name: "James",   track: "12sXrSIdiqCtB0vKYHNH29", start: 5  },
-  { name: "Wells",   track: "7LRMbd3LEoV5wZJvXT1Lwb", start: 54 },
-  { name: "Ollie",   track: "4HIx4KL2XRilgBf6WzfLqI", start: 16 },
-  { name: "Henry",   track: "7veBNI9hUkxOMCKqAQ0LlX", start: 14 },
-  { name: "AJ",      track: "1DIXPcTDzTj8ZMHt3PDt8p", start: 0  },
-  { name: "Shravan", track: "0pqnGHJpmpxLKifKRmU6WP", start: 0  },
-  { name: "Thayne",  track: "1zB4vmk8tFRmM9UULNzbLB", start: 0  }
+  { name: "Connor",  video: "o1tj2zJ2Wvg", start: 45 },
+  { name: "Everett", video: "l9PxOanFjxQ", start: 50 },
+  { name: "Lucas",   video: "Rbm6GXllBiw", start: 21 },
+  { name: "Pharoh",  video: "kpnW68Q8ltc", start: 8  },
+  { name: "Gus",     video: "0J2QdDbelmY", start: 3  },
+  { name: "Dash",    video: "ojULkWEUsPs", start: 17 },
+  { name: "James",   video: "QtPluXq_hko", start: 5  },
+  { name: "Wells",   video: "CiJeSSzu9Bo", start: 55 },
+  { name: "Ollie",   video: "TWnP8FkwfQQ", start: 52 },
+  { name: "Henry",   video: "xjoCnCaynCM", start: 47 },
+  { name: "AJ",      video: "fPO76Jlnz6c", start: 26 },
+  { name: "Shravan", video: "7wtfhZwyrcc", start: 0  },
+  { name: "Thayne",  video: "fKopy74weus", start: 22 }
 ];
 
 // ================================================================
@@ -615,21 +614,6 @@ renderMusic();
 //   🎵  MUSIC PAGE FUNCTIONS
 // ================================================================
 
-// Spotify IFrame API — seek() is the only reliable way to start at a timestamp.
-// ?t= in the URL is ignored if Spotify has a cached playback position for the track.
-var spotifyAPI = null;
-var controllers = {};   // keyed by batting-order index; never destroyed, just paused
-
-window.onSpotifyIframeApiReady = function(IFrameAPI) {
-  spotifyAPI = IFrameAPI;
-};
-(function() {
-  var s = document.createElement('script');
-  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
-  s.async = true;
-  document.head.appendChild(s);
-}());
-
 function buildMusicMap() {
   var map = {};
   for (var i = 0; i < MUSIC.length; i++) map[MUSIC[i].name] = MUSIC[i];
@@ -640,40 +624,39 @@ var musicMap = buildMusicMap();
 
 function renderMusic() {
   musicMap = buildMusicMap();
-  controllers = {};
-  var html = '<div id="api-status" style="text-align:center;font-size:11px;color:#888;padding:4px 0 8px;border-bottom:1px solid #eee;margin-bottom:4px"></div>';
+  var html = '';
   for (var i = 0; i < GAME.batting.length; i++) {
     var name = GAME.batting[i];
     var entry = musicMap[name];
     if (!entry) continue;
-    var fallbackUrl = 'https://open.spotify.com/embed/track/' + entry.track + '?t=' + entry.start;
+    var url = 'https://www.youtube-nocookie.com/embed/' + entry.video +
+              '?start=' + entry.start + '&autoplay=1&rel=0';
     html += '<div class="music-row">' +
       '<button class="music-row-btn" onclick="toggleSong(' + i + ')">' +
         '<span class="mnum">' + (i + 1) + '.</span>' +
         '<span class="mname">' + name + '</span>' +
         '<span class="micon" id="micon-' + i + '">&#9654;</span>' +
       '</button>' +
-      '<div class="music-embed" id="membed-' + i + '" data-url="' + fallbackUrl + '" data-track="' + entry.track + '" data-start="' + entry.start + '"></div>' +
+      '<div class="music-embed" id="membed-' + i + '" data-url="' + url + '"></div>' +
     '</div>';
   }
   document.getElementById('music-panel').innerHTML = html;
 }
 
 function stopAllSongs() {
-  // Pause any active controllers (do NOT destroy — that breaks future plays)
-  for (var k in controllers) {
-    try { controllers[k].pause(); } catch(e) {}
-  }
-  // Hide all open embeds (leave DOM intact so controllers stay attached)
+  // Clear iframes entirely to stop playback
   var opens = document.querySelectorAll('.music-embed.open');
-  for (var j = 0; j < opens.length; j++) opens[j].classList.remove('open');
+  for (var j = 0; j < opens.length; j++) {
+    opens[j].classList.remove('open');
+    opens[j].innerHTML = '';
+  }
   var icons = document.querySelectorAll('.micon');
   for (var j = 0; j < icons.length; j++) icons[j].innerHTML = '&#9654;';
 }
 
 function toggleSong(i) {
-  var embed  = document.getElementById('membed-' + i);
-  var icon   = document.getElementById('micon-' + i);
+  var embed = document.getElementById('membed-' + i);
+  var icon  = document.getElementById('micon-' + i);
   var isOpen = embed.classList.contains('open');
 
   stopAllSongs();
@@ -685,44 +668,8 @@ function toggleSong(i) {
 
     embed.classList.add('open');
     icon.innerHTML = '&#9646;&#9646;';
-
-    var start = parseInt(embed.getAttribute('data-start'), 10) || 0;
-    var track = embed.getAttribute('data-track');
-
-    if (spotifyAPI) {
-      var ci = i, cs = start;
-      if (controllers[i]) {
-        // Controller already exists — seek first, then play
-        controllers[i].seek(Math.max(cs, 1));
-        controllers[i].play();
-      } else {
-        // First time — create controller
-        // seek(0) may be a Spotify no-op, so use at least 1 second
-        var target = Math.max(cs, 1);
-        var holder = document.createElement('div');
-        embed.appendChild(holder);
-        spotifyAPI.createController(holder, { uri: 'spotify:track:' + track }, function(ctrl) {
-          controllers[ci] = ctrl;
-          var sought = false;
-          // Primary: seek on first playback_update tick (track is definitely loaded)
-          ctrl.addListener('playback_update', function(e) {
-            if (!sought) {
-              sought = true;
-              ctrl.seek(target);
-            }
-          });
-          ctrl.addListener('ready', function() {
-            ctrl.play();
-          });
-        });
-      }
-    } else {
-      // IFrame API not loaded — plain iframe fallback (timing may be off)
-      if (!embed.querySelector('iframe')) {
-        embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
-          'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
-      }
-    }
+    embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
+      'allow="autoplay; encrypted-media" allowfullscreen></iframe>';
   }
 }
 
@@ -751,8 +698,6 @@ function toggleMusic() {
     dots.style.display  = 'none';
     btn.innerHTML = '&#9664; Lineup';
     btn.classList.add('active');
-    var statusEl = document.getElementById('api-status');
-    if (statusEl) statusEl.textContent = spotifyAPI ? 'Spotify API: loaded ✓' : 'Spotify API: not loaded ✗';
   }
 }
 </script>
