@@ -692,18 +692,18 @@ function toggleSong(i) {
     if (spotifyAPI) {
       var ci = i, cs = start;
       if (controllers[i]) {
-        // Controller already exists — play then seek after it's running
+        // Controller already exists — seek first, then play
+        controllers[i].seek(cs);
         controllers[i].play();
-        setTimeout(function() { controllers[ci].seek(cs); }, 800);
       } else {
-        // First time — create controller, play on ready, seek 800ms later
+        // First time — create controller; on ready, seek then play
         var holder = document.createElement('div');
         embed.appendChild(holder);
         spotifyAPI.createController(holder, { uri: 'spotify:track:' + track }, function(ctrl) {
           controllers[ci] = ctrl;
           ctrl.addListener('ready', function() {
+            ctrl.seek(cs);
             ctrl.play();
-            setTimeout(function() { ctrl.seek(cs); }, 800);
           });
         });
       }
