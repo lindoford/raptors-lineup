@@ -693,16 +693,25 @@ function toggleSong(i) {
       var ci = i, cs = start;
       if (controllers[i]) {
         // Controller already exists — seek first, then play
-        controllers[i].seek(cs);
+        controllers[i].seek(Math.max(cs, 1));
         controllers[i].play();
       } else {
-        // First time — create controller; on ready, seek then play
+        // First time — create controller
+        // seek(0) may be a Spotify no-op, so use at least 1 second
+        var target = Math.max(cs, 1);
         var holder = document.createElement('div');
         embed.appendChild(holder);
         spotifyAPI.createController(holder, { uri: 'spotify:track:' + track }, function(ctrl) {
           controllers[ci] = ctrl;
+          var sought = false;
+          // Primary: seek on first playback_update tick (track is definitely loaded)
+          ctrl.addListener('playback_update', function(e) {
+            if (!sought) {
+              sought = true;
+              ctrl.seek(target);
+            }
+          });
           ctrl.addListener('ready', function() {
-            ctrl.seek(cs);
             ctrl.play();
           });
         });
