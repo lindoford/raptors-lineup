@@ -615,16 +615,6 @@ renderMusic();
 //   🎵  MUSIC PAGE FUNCTIONS
 // ================================================================
 
-// Spotify IFrame API
-var spotifyAPI = null;
-var controllers = {}; // keyed by batting index — kept alive between taps
-window.onSpotifyIframeApiReady = function(IFrameAPI) { spotifyAPI = IFrameAPI; };
-(function() {
-  var s = document.createElement('script');
-  s.src = 'https://open.spotify.com/embed/iframe-api/v1';
-  s.async = true;
-  document.head.appendChild(s);
-}());
 
 function buildMusicMap() {
   var map = {};
@@ -636,7 +626,6 @@ var musicMap = buildMusicMap();
 
 function renderMusic() {
   musicMap = buildMusicMap();
-  controllers = {};
   var html = '';
   for (var i = 0; i < GAME.batting.length; i++) {
     var name = GAME.batting[i];
@@ -644,67 +633,14 @@ function renderMusic() {
     if (!entry) continue;
     var url = 'https://open.spotify.com/embed/track/' + entry.track + '?t=' + entry.start;
     html += '<div class="music-row">' +
-      '<button class="music-row-btn" onclick="toggleSong(' + i + ')">' +
+      '<a class="music-row-btn" href="' + url + '" target="_blank">' +
         '<span class="mnum">' + (i + 1) + '.</span>' +
         '<span class="mname">' + name + '</span>' +
-        '<span class="micon" id="micon-' + i + '">&#9654;</span>' +
-      '</button>' +
-      '<div class="music-embed" id="membed-' + i + '" data-url="' + url + '"></div>' +
+        '<span class="micon">&#9654;</span>' +
+      '</a>' +
     '</div>';
   }
   document.getElementById('music-panel').innerHTML = html;
-}
-
-function pauseAll() {
-  for (var k in controllers) {
-    try { controllers[k].pause(); } catch(e) {}
-  }
-  var icons = document.querySelectorAll('.micon');
-  for (var j = 0; j < icons.length; j++) icons[j].innerHTML = '&#9654;';
-  var opens = document.querySelectorAll('.music-embed.open');
-  for (var j = 0; j < opens.length; j++) opens[j].classList.remove('open');
-}
-
-function toggleSong(i) {
-  var embed = document.getElementById('membed-' + i);
-  var icon  = document.getElementById('micon-' + i);
-  var isOpen = embed.classList.contains('open');
-
-  pauseAll();
-
-  if (!isOpen) {
-    var name  = GAME.batting[i];
-    var entry = musicMap[name];
-    if (!entry) return;
-
-    embed.classList.add('open');
-    icon.innerHTML = '&#9646;&#9646;';
-
-    if (spotifyAPI) {
-      var start = entry.start;
-      if (controllers[i]) {
-        // Controller already exists — just seek and play
-        controllers[i].seek(start);
-        controllers[i].play();
-      } else {
-        // First tap: create controller; keep it alive for future taps
-        var holder = document.createElement('div');
-        embed.appendChild(holder);
-        var idx = i;
-        spotifyAPI.createController(holder, { uri: 'spotify:track:' + entry.track }, function(controller) {
-          controllers[idx] = controller;
-          controller.addListener('ready', function() {
-            controller.seek(start);
-            controller.play();
-          });
-        });
-      }
-    } else {
-      // API not loaded — plain iframe fallback
-      embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
-        'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
-    }
-  }
 }
 
 function toggleMusic() {
@@ -716,8 +652,7 @@ function toggleMusic() {
   var dots   = document.getElementById('dots');
 
   if (panel.style.display === 'block') {
-    // Return to lineup — pause any playing song
-    pauseAll();
+    // Return to lineup
     panel.style.display = 'none';
     main.style.display  = '';
     prev.style.display  = '';
