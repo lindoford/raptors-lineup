@@ -403,8 +403,8 @@ var GAME = {
 
   // All players in batting order (1 through however many you have).
   batting: [
-    "Everett",  //  1
-    "Connor",   //  2
+    "Connor",   //  1
+    "Everett",  //  2
     "Lucas",    //  3
     "Pharoh",   //  4
     "Gus",      //  5
@@ -691,9 +691,11 @@ function toggleSong(i) {
 
     if (spotifyAPI) {
       if (controllers[i]) {
-        // Controller already exists — just seek and play
-        controllers[i].seek(start);
+        // Controller already exists — play then seek once playing
         controllers[i].play();
+        var ci = i;
+        var cs = start;
+        setTimeout(function() { controllers[ci].seek(cs); }, 400);
       } else {
         // First time tapping this player — create a controller
         var holder = document.createElement('div');
@@ -701,9 +703,16 @@ function toggleSong(i) {
         var idx = i;
         spotifyAPI.createController(holder, { uri: 'spotify:track:' + track }, function(ctrl) {
           controllers[idx] = ctrl;
+          var sought = false;
+          ctrl.addListener('playback_update', function(e) {
+            // Seek on the first playback tick while playing (track is actually loaded)
+            if (!sought && !e.data.isPaused) {
+              sought = true;
+              ctrl.seek(start);
+            }
+          });
           ctrl.addListener('ready', function() {
-            ctrl.seek(start);   // always seek, even if start === 0
-            ctrl.play();
+            ctrl.play();  // start playing; seek fires in playback_update once track loads
           });
         });
       }
