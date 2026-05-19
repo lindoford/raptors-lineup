@@ -641,7 +641,7 @@ var musicMap = buildMusicMap();
 function renderMusic() {
   musicMap = buildMusicMap();
   controllers = {};
-  var html = '';
+  var html = '<div id="api-status" style="text-align:center;font-size:11px;color:#888;padding:4px 0 8px;border-bottom:1px solid #eee;margin-bottom:4px"></div>';
   for (var i = 0; i < GAME.batting.length; i++) {
     var name = GAME.batting[i];
     var entry = musicMap[name];
@@ -690,34 +690,25 @@ function toggleSong(i) {
     var track = embed.getAttribute('data-track');
 
     if (spotifyAPI) {
+      var ci = i, cs = start;
       if (controllers[i]) {
-        // Controller already exists — play then seek once playing
+        // Controller already exists — play then seek after it's running
         controllers[i].play();
-        var ci = i;
-        var cs = start;
-        setTimeout(function() { controllers[ci].seek(cs); }, 400);
+        setTimeout(function() { controllers[ci].seek(cs); }, 800);
       } else {
-        // First time tapping this player — create a controller
+        // First time — create controller, play on ready, seek 800ms later
         var holder = document.createElement('div');
         embed.appendChild(holder);
-        var idx = i;
         spotifyAPI.createController(holder, { uri: 'spotify:track:' + track }, function(ctrl) {
-          controllers[idx] = ctrl;
-          var sought = false;
-          ctrl.addListener('playback_update', function(e) {
-            // Seek on the first playback tick while playing (track is actually loaded)
-            if (!sought && !e.data.isPaused) {
-              sought = true;
-              ctrl.seek(start);
-            }
-          });
+          controllers[ci] = ctrl;
           ctrl.addListener('ready', function() {
-            ctrl.play();  // start playing; seek fires in playback_update once track loads
+            ctrl.play();
+            setTimeout(function() { ctrl.seek(cs); }, 800);
           });
         });
       }
     } else {
-      // IFrame API not loaded — plain iframe fallback
+      // IFrame API not loaded — plain iframe fallback (timing may be off)
       if (!embed.querySelector('iframe')) {
         embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
           'allowtransparency="true" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
@@ -751,6 +742,8 @@ function toggleMusic() {
     dots.style.display  = 'none';
     btn.innerHTML = '&#9664; Lineup';
     btn.classList.add('active');
+    var statusEl = document.getElementById('api-status');
+    if (statusEl) statusEl.textContent = spotifyAPI ? 'Spotify API: loaded ✓' : 'Spotify API: not loaded ✗';
   }
 }
 </script>
