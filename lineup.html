@@ -182,10 +182,6 @@ body {
 }
 .nav-btn:disabled { background: #aaa; }
 
-/* ── WALKOUT MUSIC (hidden on Kindle, shown on iPhone via media query) ── */
-#music-toggle { display: none; }
-#music-panel  { display: none; padding: 8px 12px; overflow-y: auto;
-                -webkit-overflow-scrolling: touch; }
 
 #dots { text-align: center; }
 #dots .d {
@@ -269,53 +265,6 @@ body {
 
   .nav-btn { font-size: 14px; padding: 9px 18px; min-width: 0; }
 
-  /* ── Music button: circle, separate from nav ── */
-  #music-toggle {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-justify-content: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    padding: 0;
-    border-radius: 50%;
-    font-size: 20px;
-    font-family: Georgia, serif;
-    font-weight: bold;
-    background: #000;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    -webkit-appearance: none;
-    margin-left: 8px;
-  }
-  #music-toggle.active {
-    background: #444;
-    border-radius: 4px;
-    width: auto;
-    height: auto;
-    padding: 9px 14px;
-    font-size: 14px;
-    margin-left: 8px;
-  }
-  .music-row { border-bottom: 1px solid #ccc; }
-  .music-row-btn {
-    display: -webkit-flex; display: flex;
-    -webkit-align-items: center; align-items: center;
-    width: 100%; background: none; border: none;
-    padding: 12px 4px;
-    font-family: Georgia, serif; font-size: 16px;
-    text-align: left; cursor: pointer;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.08);
-  }
-  .mnum  { font-weight: bold; min-width: 28px; }
-  .mname { -webkit-flex: 1; flex: 1; }
-  .micon { font-size: 20px; }
-  .music-embed { display: none; padding: 2px 0 10px; }
-  .music-embed.open { display: block; }
-  .music-embed iframe { width: 100%; height: 120px; border: none; border-radius: 6px; }
 }
 </style>
 </head>
@@ -381,15 +330,11 @@ body {
 
 </div>
 
-<!-- ── WALKOUT MUSIC PANEL (iPhone only) ── -->
-<div id="music-panel"></div>
-
 <!-- ── FOOTER / NAV ── -->
 <div id="footer">
   <button class="nav-btn" id="btn-prev" onclick="go(-1)">&#9664; PREV</button>
   <div id="dots"></div>
   <button class="nav-btn" id="btn-next" onclick="go(1)">NEXT &#9654;</button>
-  <button class="nav-btn" id="music-toggle" onclick="toggleMusic()">&#127925;</button>
 </div>
 
 <script>
@@ -407,13 +352,13 @@ var GAME = {
     "Everett",  //  2
     "Lucas",    //  3
     "Pharoh",   //  4
-    "Gus",      //  5
-    "Dash",     //  6
-    "James",    //  7
-    "Wells",    //  8
-    "Ollie",    //  9
-    "Henry",    // 10
-    "AJ",       // 11
+    "Henry",    //  5
+    "James",    //  6
+    "Ollie",    //  7
+    "Gus",      //  8
+    "Wells",    //  9
+    "AJ",       // 10
+    "Dash",     // 11
     "Shravan",  // 12
     "Thayne"    // 13
   ],
@@ -438,29 +383,29 @@ var GAME = {
     },
     { // ── INNING 2 ──
       pitcher:          "Ollie",
-      catcher:          "Gus",
+      catcher:          "James",
       first:            "Connor",
       second:           "Dash",
       third:            "AJ",
       shortstop:        "Lucas",
-      leftField:        "James",
+      leftField:        "Gus",
       leftCenterField:  "Pharoh",
       rightCenterField: "Shravan",
       rightField:       "Thayne",
-      bench: ["Everett", "Wells", "Henry"]
+      bench: ["Everett", "Henry", "Wells"]
     },
     { // ── INNING 3 ──
       pitcher:          "Pharoh",
-      catcher:          "Gus",
+      catcher:          "Connor",
       first:            "Everett",
       second:           "Shravan",
       third:            "Henry",
       shortstop:        "James",
-      leftField:        "Wells",
+      leftField:        "Gus",
       leftCenterField:  "Ollie",
-      rightCenterField: "Thayne",
+      rightCenterField: "Wells",
       rightField:       "Dash",
-      bench: ["Connor", "Lucas", "AJ"]
+      bench: ["Lucas", "AJ", "Thayne"]
     },
     { // ── INNING 4 ──
       pitcher:          "Connor",
@@ -479,29 +424,6 @@ var GAME = {
 
 };
 
-// ================================================================
-//   🎵  WALKOUT MUSIC  — update once per season (or as needed)
-//   To find a YouTube video ID:
-//     1. Open the song on YouTube
-//     2. Copy the URL — the ID is the part after ?v= or after youtu.be/
-//   start = seconds into the song to begin playback
-// ================================================================
-
-var MUSIC = [
-  { name: "Connor",  video: "o1tj2zJ2Wvg", start: 45 },
-  { name: "Everett", video: "l9PxOanFjxQ", start: 50 },
-  { name: "Lucas",   video: "Rbm6GXllBiw", start: 21 },
-  { name: "Pharoh",  video: "kpnW68Q8ltc", start: 8  },
-  { name: "Gus",     video: "0J2QdDbelmY", start: 3  },
-  { name: "Dash",    video: "ojULkWEUsPs", start: 17 },
-  { name: "James",   video: "QtPluXq_hko", start: 5  },
-  { name: "Wells",   video: "CiJeSSzu9Bo", start: 55 },
-  { name: "Ollie",   video: "TWnP8FkwfQQ", start: 52 },
-  { name: "Henry",   video: "xjoCnCaynCM", start: 47 },
-  { name: "AJ",      video: "fPO76Jlnz6c", start: 26 },
-  { name: "Shravan", video: "7wtfhZwyrcc", start: 0  },
-  { name: "Thayne",  video: "fKopy74weus", start: 22 }
-];
 
 // ================================================================
 //   ⚙️  APP CODE — no need to edit below this line
@@ -608,98 +530,6 @@ function go(dir) {
 }
 
 render();
-renderMusic();
-
-// ================================================================
-//   🎵  MUSIC PAGE FUNCTIONS
-// ================================================================
-
-function buildMusicMap() {
-  var map = {};
-  for (var i = 0; i < MUSIC.length; i++) map[MUSIC[i].name] = MUSIC[i];
-  return map;
-}
-
-var musicMap = buildMusicMap();
-
-function renderMusic() {
-  musicMap = buildMusicMap();
-  var html = '';
-  for (var i = 0; i < GAME.batting.length; i++) {
-    var name = GAME.batting[i];
-    var entry = musicMap[name];
-    if (!entry) continue;
-    var url = 'https://www.youtube-nocookie.com/embed/' + entry.video +
-              '?start=' + entry.start + '&autoplay=1&rel=0';
-    html += '<div class="music-row">' +
-      '<button class="music-row-btn" onclick="toggleSong(' + i + ')">' +
-        '<span class="mnum">' + (i + 1) + '.</span>' +
-        '<span class="mname">' + name + '</span>' +
-        '<span class="micon" id="micon-' + i + '">&#9654;</span>' +
-      '</button>' +
-      '<div class="music-embed" id="membed-' + i + '" data-url="' + url + '"></div>' +
-    '</div>';
-  }
-  document.getElementById('music-panel').innerHTML = html;
-}
-
-function stopAllSongs() {
-  // Clear iframes entirely to stop playback
-  var opens = document.querySelectorAll('.music-embed.open');
-  for (var j = 0; j < opens.length; j++) {
-    opens[j].classList.remove('open');
-    opens[j].innerHTML = '';
-  }
-  var icons = document.querySelectorAll('.micon');
-  for (var j = 0; j < icons.length; j++) icons[j].innerHTML = '&#9654;';
-}
-
-function toggleSong(i) {
-  var embed = document.getElementById('membed-' + i);
-  var icon  = document.getElementById('micon-' + i);
-  var isOpen = embed.classList.contains('open');
-
-  stopAllSongs();
-
-  if (!isOpen) {
-    var name  = GAME.batting[i];
-    var entry = musicMap[name];
-    if (!entry) return;
-
-    embed.classList.add('open');
-    icon.innerHTML = '&#9646;&#9646;';
-    embed.innerHTML = '<iframe src="' + embed.getAttribute('data-url') + '" ' +
-      'allow="autoplay; encrypted-media" allowfullscreen></iframe>';
-  }
-}
-
-function toggleMusic() {
-  var main   = document.getElementById('main');
-  var panel  = document.getElementById('music-panel');
-  var btn    = document.getElementById('music-toggle');
-  var prev   = document.getElementById('btn-prev');
-  var next   = document.getElementById('btn-next');
-  var dots   = document.getElementById('dots');
-
-  if (panel.style.display === 'block') {
-    stopAllSongs();
-    panel.style.display = 'none';
-    main.style.display  = '';
-    prev.style.display  = '';
-    next.style.display  = '';
-    dots.style.display  = '';
-    btn.innerHTML = '&#127925;';
-    btn.classList.remove('active');
-  } else {
-    main.style.display  = 'none';
-    panel.style.display = 'block';
-    prev.style.display  = 'none';
-    next.style.display  = 'none';
-    dots.style.display  = 'none';
-    btn.innerHTML = '&#9664; Lineup';
-    btn.classList.add('active');
-  }
-}
 </script>
 </body>
 </html>
