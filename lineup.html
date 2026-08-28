@@ -193,6 +193,50 @@ body {
 }
 #dots .d.on { background: #000; }
 
+/* ── TABLE VIEW ── */
+#table-panel {
+  display: none;
+  -webkit-flex: 1;
+  flex: 1;
+  overflow: auto;
+  padding: 8px 4px;
+}
+#tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Georgia, serif;
+}
+#tbl th, #tbl td {
+  border: 1px solid #000;
+  text-align: center;
+  padding: 5px 3px;
+  font-size: 14px;
+}
+#tbl thead th {
+  background: #000;
+  color: #fff;
+  font-size: 13px;
+  padding: 6px 3px;
+}
+#tbl .pname {
+  text-align: left;
+  padding-left: 6px;
+  white-space: nowrap;
+}
+#tbl .bnum { color: #888; font-size: 12px; }
+.cell-bench { color: #999; font-style: italic; }
+.cell-p { font-weight: bold; }
+#center-ctrl {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  gap: 5px;
+}
+#btn-table { font-size: 14px; padding: 8px 16px; min-width: 80px; }
+
 /* ── PHONE LAYOUT (portrait screens ≤ 480px — iPhone etc.) ── */
 @media screen and (max-width: 480px) {
   body { overflow: auto; height: auto; }
@@ -330,10 +374,16 @@ body {
 
 </div>
 
+<!-- ── TABLE VIEW ── -->
+<div id="table-panel"></div>
+
 <!-- ── FOOTER / NAV ── -->
 <div id="footer">
   <button class="nav-btn" id="btn-prev" onclick="go(-1)">&#9664; PREV</button>
-  <div id="dots"></div>
+  <div id="center-ctrl">
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-table" onclick="toggleTable()">TABLE</button>
+  </div>
   <button class="nav-btn" id="btn-next" onclick="go(1)">NEXT &#9654;</button>
 </div>
 
@@ -352,15 +402,14 @@ var GAME = {
     "Jonah",    //  2
     "Lucas",    //  3
     "Pharoh",   //  4
-    "Gus",      //  5
-    "Ollie",    //  6
-    "Henry",    //  7
-    "Everett",  //  8
-    "AJ",       //  9
-    "Wells",    // 10
-    "Kaveh",    // 11
-    "August",   // 12
-    "Thayne"    // 13
+    "Ollie",    //  5
+    "Henry",    //  6
+    "Everett",  //  7
+    "AJ",       //  8
+    "Wells",    //  9
+    "Kaveh",    // 10
+    "August",   // 11
+    "Thayne"    // 12
   ],
 
   // One entry per inning.
@@ -369,56 +418,82 @@ var GAME = {
   // bench: list players sitting that inning (up to however many you have).
   innings: [
     { // ── INNING 1 ──
-      pitcher:          "Ollie",
-      catcher:          "Gus",
-      first:            "Everett",
-      second:           "Pharoh",
-      third:            "Henry",
-      shortstop:        "Lucas",
-      leftField:        "Jonah",
-      leftCenterField:  "Connor",
-      rightCenterField: "August",
-      rightField:       "Kaveh",
-      bench: ["AJ", "Wells", "Thayne"]
-    },
-    { // ── INNING 2 ──
       pitcher:          "Connor",
-      catcher:          "AJ",
+      catcher:          "August",
       first:            "Everett",
       second:           "Pharoh",
       third:            "Henry",
       shortstop:        "Lucas",
       leftField:        "Jonah",
       leftCenterField:  "Ollie",
+      rightCenterField: "AJ",
+      rightField:       "Kaveh",
+      bench: ["Wells", "Thayne"]
+    },
+    { // ── INNING 2 ──
+      pitcher:          "Connor",
+      catcher:          "August",
+      first:            "Everett",
+      second:           "Pharoh",
+      third:            "Kaveh",
+      shortstop:        "Lucas",
+      leftField:        "Jonah",
+      leftCenterField:  "Ollie",
       rightCenterField: "Wells",
       rightField:       "Thayne",
-      bench: ["Gus", "Kaveh", "August"]
+      bench: ["Henry", "AJ"]
     },
     { // ── INNING 3 ──
-      pitcher:          "Lucas",
-      catcher:          "Everett",
+      pitcher:          "Everett",
+      catcher:          "Henry",
       first:            "Ollie",
       second:           "AJ",
-      third:            "Wells",
-      shortstop:        "Pharoh",
+      third:            "Kaveh",
+      shortstop:        "Jonah",
       leftField:        "August",
-      leftCenterField:  "Gus",
-      rightCenterField: "Kaveh",
+      leftCenterField:  "Lucas",
+      rightCenterField: "Wells",
       rightField:       "Thayne",
-      bench: ["Connor", "Jonah", "Henry"]
+      bench: ["Connor", "Pharoh"]
     },
     { // ── INNING 4 ──
       pitcher:          "Jonah",
-      catcher:          "Connor",
+      catcher:          "Henry",
       first:            "Ollie",
       second:           "AJ",
       third:            "Wells",
       shortstop:        "Pharoh",
       leftField:        "August",
-      leftCenterField:  "Gus",
-      rightCenterField: "Henry",
+      leftCenterField:  "Connor",
+      rightCenterField: "Thayne",
       rightField:       "Kaveh",
-      bench: ["Lucas", "Everett", "Thayne"]
+      bench: ["Lucas", "Everett"]
+    },
+    { // ── INNING 5 ──
+      pitcher:          "Jonah",
+      catcher:          "Kaveh",
+      first:            "Connor",
+      second:           "Lucas",
+      third:            "Wells",
+      shortstop:        "Pharoh",
+      leftField:        "AJ",
+      leftCenterField:  "Everett",
+      rightCenterField: "Henry",
+      rightField:       "Thayne",
+      bench: ["Ollie", "August"]
+    },
+    { // ── INNING 6 ──
+      pitcher:          "Ollie",
+      catcher:          "Thayne",
+      first:            "Connor",
+      second:           "Lucas",
+      third:            "August",
+      shortstop:        "Everett",
+      leftField:        "AJ",
+      leftCenterField:  "Pharoh",
+      rightCenterField: "Henry",
+      rightField:       "Wells",
+      bench: ["Jonah", "Kaveh"]
     }
   ]
 
@@ -527,6 +602,59 @@ function go(dir) {
     cur = next;
     render();
   }
+}
+
+// ── TABLE VIEW ──
+var tableMode = false;
+
+function toggleTable() {
+  tableMode = !tableMode;
+  document.getElementById('main').style.display         = tableMode ? 'none' : '';
+  document.getElementById('table-panel').style.display  = tableMode ? '' : 'none';
+  document.getElementById('btn-prev').style.display     = tableMode ? 'none' : '';
+  document.getElementById('btn-next').style.display     = tableMode ? 'none' : '';
+  document.getElementById('dots').style.display         = tableMode ? 'none' : '';
+  document.getElementById('btn-table').textContent      = tableMode ? 'LINEUP' : 'TABLE';
+  document.getElementById('inning-lbl').textContent     = tableMode
+    ? 'ROTATION TABLE'
+    : 'INNING ' + (cur + 1) + ' OF ' + GAME.innings.length;
+  if (tableMode) buildTable();
+}
+
+function buildTable() {
+  var innings = GAME.innings;
+  var n = innings.length;
+
+  // Build position lookup for each inning: player → abbr
+  var maps = [];
+  for (var i = 0; i < n; i++) {
+    var inn = innings[i];
+    var m = {};
+    for (var pos in ABBR) {
+      if (inn[pos]) m[inn[pos]] = ABBR[pos];
+    }
+    if (inn.bench) {
+      for (var b = 0; b < inn.bench.length; b++) m[inn.bench[b]] = 'B';
+    }
+    maps.push(m);
+  }
+
+  var html = '<table id="tbl"><thead><tr><th>Player</th>';
+  for (var i = 0; i < n; i++) html += '<th>INN ' + (i + 1) + '</th>';
+  html += '</tr></thead><tbody>';
+
+  for (var b = 0; b < GAME.batting.length; b++) {
+    var name = GAME.batting[b];
+    html += '<tr><td class="pname"><span class="bnum">' + (b + 1) + '.&nbsp;</span>' + name + '</td>';
+    for (var i = 0; i < n; i++) {
+      var abbr = maps[i][name] || '?';
+      var cls  = abbr === 'B' ? 'cell-bench' : abbr === 'P' ? 'cell-p' : '';
+      html += '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + abbr + '</td>';
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  document.getElementById('table-panel').innerHTML = html;
 }
 
 render();
