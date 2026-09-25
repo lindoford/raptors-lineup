@@ -235,7 +235,20 @@ body {
   align-items: center;
   gap: 5px;
 }
-#btn-table { font-size: 14px; padding: 8px 16px; min-width: 80px; }
+#edit-bar { display: -webkit-flex; display: flex; gap: 6px; -webkit-align-items: center; align-items: center; }
+.sm-btn {
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 8px 14px;
+  background: #000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  border-radius: 2px;
+}
+body.edit-mode #header { background: #900; }
 
 /* ── PHONE LAYOUT (portrait screens ≤ 480px — iPhone etc.) ── */
 @media screen and (max-width: 480px) {
@@ -382,7 +395,11 @@ body {
   <button class="nav-btn" id="btn-prev" onclick="go(-1)">&#9664; PREV</button>
   <div id="center-ctrl">
     <div id="dots"></div>
-    <button class="nav-btn" id="btn-table" onclick="toggleTable()">TABLE</button>
+    <div id="edit-bar">
+      <button class="sm-btn" id="btn-table" onclick="toggleTable()">TABLE</button>
+      <button class="sm-btn" id="btn-edit" onclick="toggleEdit()">EDIT</button>
+      <button class="sm-btn" id="btn-reset" onclick="resetLive()" style="display:none;background:#555">RESET</button>
+    </div>
   </div>
   <button class="nav-btn" id="btn-next" onclick="go(1)">NEXT &#9654;</button>
 </div>
@@ -399,17 +416,18 @@ var GAME = {
   // All players in batting order (1 through however many you have).
   batting: [
     "Connor",   //  1
-    "Lucas",    //  2
-    "Pharoh",   //  3
-    "Ollie",    //  4
-    "Henry",    //  5
-    "Everett",  //  6
-    "AJ",       //  7
-    "Wells",    //  8
-    "Kaveh",    //  9
-    "August",   // 10
-    "Gus",      // 11
-    "Thayne"    // 12
+    "Jonah",    //  2
+    "Everett",  //  3
+    "Lucas",    //  4
+    "Pharoh",   //  5
+    "Ollie",    //  6
+    "Henry",    //  7
+    "AJ",       //  8
+    "Wells",    //  9
+    "Kaveh",    // 10
+    "August",   // 11
+    "Gus",      // 12
+    "Thayne"    // 13
   ],
 
   // One entry per inning.
@@ -419,81 +437,55 @@ var GAME = {
   innings: [
     { // ── INNING 1 ──
       pitcher:          "Connor",
-      catcher:          "August",
+      catcher:          "Gus",
       first:            "Everett",
-      second:           "Pharoh",
-      third:            "Henry",
-      shortstop:        "Lucas",
-      leftField:        "AJ",
-      leftCenterField:  "Ollie",
-      rightCenterField: "Gus",
+      second:           "Lucas",
+      third:            "AJ",
+      shortstop:        "Pharoh",
+      leftField:        "Ollie",
+      leftCenterField:  "Jonah",
+      rightCenterField: "August",
       rightField:       "Kaveh",
-      bench: ["Wells", "Thayne"]
+      bench: ["Henry", "Wells", "Thayne"]
     },
     { // ── INNING 2 ──
-      pitcher:          "Connor",
-      catcher:          "August",
+      pitcher:          "Ollie",
+      catcher:          "Connor",
       first:            "Everett",
-      second:           "Pharoh",
-      third:            "Henry",
-      shortstop:        "Lucas",
-      leftField:        "AJ",
-      leftCenterField:  "Ollie",
-      rightCenterField: "Wells",
+      second:           "Lucas",
+      third:            "AJ",
+      shortstop:        "Pharoh",
+      leftField:        "Wells",
+      leftCenterField:  "Jonah",
+      rightCenterField: "Henry",
       rightField:       "Thayne",
-      bench: ["Kaveh", "Gus"]
+      bench: ["Kaveh", "August", "Gus"]
     },
     { // ── INNING 3 ──
       pitcher:          "Everett",
-      catcher:          "Gus",
+      catcher:          "AJ",
       first:            "Ollie",
-      second:           "AJ",
-      third:            "Kaveh",
+      second:           "Lucas",
+      third:            "Henry",
       shortstop:        "Pharoh",
-      leftField:        "August",
-      leftCenterField:  "Connor",
-      rightCenterField: "Wells",
-      rightField:       "Thayne",
-      bench: ["Lucas", "Henry"]
+      leftField:        "Kaveh",
+      leftCenterField:  "August",
+      rightCenterField: "Gus",
+      rightField:       "Wells",
+      bench: ["Connor", "Jonah", "Thayne"]
     },
     { // ── INNING 4 ──
-      pitcher:          "Lucas",
+      pitcher:          "Jonah",
       catcher:          "Gus",
       first:            "Ollie",
-      second:           "AJ",
-      third:            "Wells",
-      shortstop:        "Pharoh",
-      leftField:        "Henry",
-      leftCenterField:  "Connor",
-      rightCenterField: "Thayne",
-      rightField:       "Kaveh",
-      bench: ["Everett", "August"]
-    },
-    { // ── INNING 5 ──
-      pitcher:          "Ollie",
-      catcher:          "Kaveh",
-      first:            "Connor",
-      second:           "Lucas",
-      third:            "Wells",
-      shortstop:        "Everett",
-      leftField:        "AJ",
-      leftCenterField:  "Pharoh",
-      rightCenterField: "Henry",
-      rightField:       "August",
-      bench: ["Gus", "Thayne"]
-    },
-    { // ── INNING 6 ──
-      pitcher:          "Ollie",
-      catcher:          "Kaveh",
-      first:            "Connor",
-      second:           "Lucas",
+      second:           "Everett",
       third:            "August",
-      shortstop:        "Everett",
-      leftField:        "Henry",
-      leftCenterField:  "Gus",
-      rightCenterField: "Wells",
+      shortstop:        "Connor",
+      leftField:        "Wells",
+      leftCenterField:  "AJ",
+      rightCenterField: "Henry",
       rightField:       "Thayne",
-      bench: ["Pharoh", "AJ"]
+      bench: ["Lucas", "Pharoh", "Kaveh"]
     }
   ]
 
@@ -526,27 +518,35 @@ var ABBR = {
 
 var cur = 0;
 
-function makePosLabel(abbr, name, x, y) {
-  var w = Math.max(name.length * 9 + 10, 40);
+function makePosLabel(abbr, name, x, y, slot, isSelected) {
+  var display = (name === '—') ? '—' : shortName(name);
+  var w = Math.max(display.length * 9 + 10, 40);
   var h = 36;
+  var fill = isSelected ? '#FFD700' : 'white';
+  var open = slot
+    ? '<g onclick="handleSlotClick(\'' + slot + '\')" style="cursor:pointer">'
+    : '<g>';
   return (
+    open +
     '<rect x="' + (x - w/2) + '" y="' + (y - 22) + '" width="' + w + '" height="' + h + '"' +
-    ' fill="white" fill-opacity="0.88" rx="2"/>' +
+    ' fill="' + fill + '" fill-opacity="0.88" rx="2"/>' +
     '<text x="' + x + '" y="' + (y - 10) + '"' +
     ' font-size="11" font-weight="bold" fill="#555" text-anchor="middle">' + abbr + '</text>' +
     '<text x="' + x + '" y="' + (y + 8) + '"' +
-    ' font-size="16" fill="#000" text-anchor="middle">' + name + '</text>'
+    ' font-size="16" fill="#000" text-anchor="middle">' + display + '</text>' +
+    '</g>'
   );
 }
 
 function render() {
-  var inn = GAME.innings[cur];
+  var inn = liveInnings[cur];
 
   // ── Diamond labels ──
   var svg = '';
   for (var pos in POS) {
     var p = POS[pos];
-    svg += makePosLabel(p.abbr, inn[pos] || '—', p.x, p.y);
+    svg += makePosLabel(p.abbr, inn[pos] || '—', p.x, p.y,
+      editMode ? pos : null, editMode && selectedSlot === pos);
   }
   document.getElementById('pos-g').innerHTML = svg;
 
@@ -557,11 +557,15 @@ function render() {
   }
 
   var html = '';
-  for (var i = 0; i < GAME.batting.length; i++) {
-    var name = GAME.batting[i];
+  for (var i = 0; i < liveBatting.length; i++) {
+    var name = liveBatting[i];
     var spot = fieldMap[name];
     var badge = spot ? '<span class="pos">' + ABBR[spot] + '</span>' : '';
-    html += '<li><span class="num">' + (i + 1) + '.</span>&nbsp;' + name + badge + '</li>';
+    var isBatSel = editMode && selectedBatIdx === i;
+    var tap = editMode
+      ? ' onclick="batClick(' + i + ')" style="cursor:pointer' + (isBatSel ? ';background:#FFD700' : '') + '"'
+      : '';
+    html += '<li' + tap + '><span class="num">' + (i + 1) + '.</span>&nbsp;' + shortName(name) + badge + '</li>';
   }
   document.getElementById('bat-list').innerHTML = html;
 
@@ -571,18 +575,26 @@ function render() {
   // Show at least 2 slots even if empty
   var slots = Math.max(benchPlayers.length, 2);
   for (var i = 0; i < slots; i++) {
+    var slotKey = 'bench_' + i;
+    var isSel = editMode && selectedSlot === slotKey;
+    var tap = editMode
+      ? ' onclick="handleSlotClick(\'' + slotKey + '\')" style="cursor:pointer' + (isSel ? ';background:#FFD700' : '') + '"'
+      : '';
     if (benchPlayers[i]) {
-      benchHtml += '<li><span class="bnum">' + (i + 1) + '.</span>' + benchPlayers[i] + '</li>';
+      benchHtml += '<li' + tap + '><span class="bnum">' + (i + 1) + '.</span>' + benchPlayers[i] + '</li>';
     } else {
-      benchHtml += '<li class="empty"><span class="bnum">' + (i + 1) + '.</span>—</li>';
+      benchHtml += '<li class="empty"' + tap + '><span class="bnum">' + (i + 1) + '.</span>—</li>';
     }
   }
   document.getElementById('bench-list').innerHTML = benchHtml;
 
   // ── Header ──
   document.getElementById('team-name').textContent = GAME.teamName;
-  document.getElementById('inning-lbl').textContent =
-    'INNING ' + (cur + 1) + ' OF ' + GAME.innings.length;
+  if (!tableMode) {
+    document.getElementById('inning-lbl').textContent = editMode
+      ? 'EDIT — tap two spots to swap'
+      : 'INNING ' + (cur + 1) + ' OF ' + GAME.innings.length;
+  }
 
   // ── Progress dots ──
   var dots = '';
@@ -600,6 +612,8 @@ function go(dir) {
   var next = cur + dir;
   if (next >= 0 && next < GAME.innings.length) {
     cur = next;
+    selectedSlot = null;
+    selectedBatIdx = null;
     render();
   }
 }
@@ -621,20 +635,27 @@ function toggleTable() {
   if (tableMode) buildTable();
 }
 
+function shortName(name) {
+  var parts = name.trim().split(' ');
+  return parts.length < 2 ? name : parts[0] + ' ' + parts[1][0] + '.';
+}
+
 function buildTable() {
-  var innings = GAME.innings;
+  var innings = liveInnings;
   var n = innings.length;
 
-  // Build position lookup for each inning: player → abbr
+  // slot map: playerName → {abbr, slot}
   var maps = [];
   for (var i = 0; i < n; i++) {
     var inn = innings[i];
     var m = {};
     for (var pos in ABBR) {
-      if (inn[pos]) m[inn[pos]] = ABBR[pos];
+      if (inn[pos]) m[inn[pos]] = {abbr: ABBR[pos], slot: pos};
     }
     if (inn.bench) {
-      for (var b = 0; b < inn.bench.length; b++) m[inn.bench[b]] = 'B';
+      for (var b = 0; b < inn.bench.length; b++) {
+        if (inn.bench[b]) m[inn.bench[b]] = {abbr: 'B', slot: 'bench_' + b};
+      }
     }
     maps.push(m);
   }
@@ -643,13 +664,18 @@ function buildTable() {
   for (var i = 0; i < n; i++) html += '<th>INN ' + (i + 1) + '</th>';
   html += '</tr></thead><tbody>';
 
-  for (var b = 0; b < GAME.batting.length; b++) {
-    var name = GAME.batting[b];
-    html += '<tr><td class="pname"><span class="bnum">' + (b + 1) + '.&nbsp;</span>' + name + '</td>';
+  for (var b = 0; b < liveBatting.length; b++) {
+    var name = liveBatting[b];
+    html += '<tr><td class="pname"><span class="bnum">' + (b + 1) + '.&nbsp;</span>' + shortName(name) + '</td>';
     for (var i = 0; i < n; i++) {
-      var abbr = maps[i][name] || '?';
-      var cls  = abbr === 'B' ? 'cell-bench' : abbr === 'P' ? 'cell-p' : '';
-      html += '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + abbr + '</td>';
+      var entry = maps[i][name];
+      var abbr  = entry ? entry.abbr : '?';
+      var slot  = entry ? entry.slot : null;
+      var isSel = tableSelectedCell && tableSelectedCell.inning === i && tableSelectedCell.slot === slot;
+      var cellCls   = abbr === 'B' ? 'cell-bench' : abbr === 'P' ? 'cell-p' : '';
+      var cellStyle = (editMode && slot ? 'cursor:pointer;' : '') + (isSel ? 'background:#FFD700' : '');
+      var cellClick = (editMode && slot) ? ' onclick="tableClick(' + i + ',\'' + slot + '\')"' : '';
+      html += '<td' + (cellCls ? ' class="' + cellCls + '"' : '') + cellClick + (cellStyle ? ' style="' + cellStyle + '"' : '') + '>' + abbr + '</td>';
     }
     html += '</tr>';
   }
@@ -657,6 +683,136 @@ function buildTable() {
   document.getElementById('table-panel').innerHTML = html;
 }
 
+// ── EDIT MODE ──
+var liveInnings = null;
+var liveBatting  = null;
+var editMode = false;
+var selectedSlot = null;
+var selectedBatIdx = null;
+var tableSelectedCell = null;
+
+function initLive() {
+  var saved = null;
+  try {
+    var raw = localStorage.getItem('lineup_' + GAME.teamName);
+    if (raw) {
+      var p = JSON.parse(raw);
+      if (p.key === GAME.batting.join(',')) saved = p;
+    }
+  } catch(e) {}
+  liveInnings = (saved && saved.innings) || JSON.parse(JSON.stringify(GAME.innings));
+  liveBatting  = (saved && saved.batting) || JSON.parse(JSON.stringify(GAME.batting));
+}
+
+function saveLive() {
+  try {
+    localStorage.setItem('lineup_' + GAME.teamName, JSON.stringify({
+      key:     GAME.batting.join(','),
+      innings: liveInnings,
+      batting: liveBatting
+    }));
+  } catch(e) {}
+}
+
+function resetLive() {
+  liveInnings = JSON.parse(JSON.stringify(GAME.innings));
+  liveBatting  = JSON.parse(JSON.stringify(GAME.batting));
+  saveLive();
+  selectedSlot = null;
+  selectedBatIdx = null;
+  tableSelectedCell = null;
+  render();
+  if (tableMode) buildTable();
+}
+
+function toggleEdit() {
+  editMode = !editMode;
+  selectedSlot = null;
+  selectedBatIdx = null;
+  tableSelectedCell = null;
+  var btn = document.getElementById('btn-edit');
+  btn.textContent = editMode ? 'DONE' : 'EDIT';
+  btn.style.background = editMode ? '#b00' : '';
+  document.getElementById('btn-reset').style.display = editMode ? '' : 'none';
+  document.getElementById('btn-table').style.display = editMode ? 'none' : '';
+  document.body.className = editMode ? 'edit-mode' : '';
+  if (tableMode) {
+    document.getElementById('inning-lbl').textContent = editMode
+      ? 'EDIT — tap same column to swap'
+      : 'ROTATION TABLE';
+    buildTable();
+  }
+  render();
+}
+
+function handleSlotClick(slot) {
+  if (!editMode) return;
+  if (selectedSlot === null) {
+    selectedSlot = slot;
+  } else if (selectedSlot === slot) {
+    selectedSlot = null;
+  } else {
+    swapSlots(selectedSlot, slot, cur);
+    selectedSlot = null;
+    saveLive();
+  }
+  render();
+}
+
+function batClick(idx) {
+  if (!editMode) return;
+  if (selectedBatIdx === null) {
+    selectedBatIdx = idx;
+  } else if (selectedBatIdx === idx) {
+    selectedBatIdx = null;
+  } else {
+    var tmp = liveBatting[selectedBatIdx];
+    liveBatting[selectedBatIdx] = liveBatting[idx];
+    liveBatting[idx] = tmp;
+    selectedBatIdx = null;
+    saveLive();
+    if (tableMode) buildTable();
+  }
+  render();
+}
+
+function tableClick(inning, slot) {
+  if (!editMode) return;
+  if (tableSelectedCell === null || tableSelectedCell.inning !== inning) {
+    tableSelectedCell = {inning: inning, slot: slot};
+    buildTable();
+    return;
+  }
+  if (tableSelectedCell.slot === slot) {
+    tableSelectedCell = null;
+    buildTable();
+    return;
+  }
+  // Same inning, different slot — swap
+  swapSlots(tableSelectedCell.slot, slot, inning);
+  tableSelectedCell = null;
+  saveLive();
+  buildTable();
+}
+
+function swapSlots(a, b, innIdx) {
+  var inn = liveInnings[innIdx !== undefined ? innIdx : cur];
+  function getVal(s) {
+    if (s.indexOf('bench_') === 0) return (inn.bench || [])[parseInt(s.slice(6))] || null;
+    return inn[s] || null;
+  }
+  function setVal(s, v) {
+    if (s.indexOf('bench_') === 0) {
+      if (!inn.bench) inn.bench = [];
+      inn.bench[parseInt(s.slice(6))] = v;
+    } else { inn[s] = v; }
+  }
+  var va = getVal(a), vb = getVal(b);
+  setVal(a, vb);
+  setVal(b, va);
+}
+
+initLive();
 render();
 </script>
 </body>
