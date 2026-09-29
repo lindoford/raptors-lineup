@@ -415,7 +415,7 @@ var GAME = {
 
   // All players in batting order (1 through however many you have).
   batting: [
-    "Connor",   //  1
+    "August",   //  1
     "Jonah",    //  2
     "Everett",  //  3
     "Lucas",    //  4
@@ -423,11 +423,10 @@ var GAME = {
     "Ollie",    //  6
     "Henry",    //  7
     "AJ",       //  8
-    "Wells",    //  9
-    "Kaveh",    // 10
-    "August",   // 11
-    "Gus",      // 12
-    "Thayne"    // 13
+    "Gus",      //  9
+    "Wells",    // 10
+    "Kaveh",    // 11
+    "Thayne"    // 12
   ],
 
   // One entry per inning.
@@ -436,56 +435,56 @@ var GAME = {
   // bench: list players sitting that inning (up to however many you have).
   innings: [
     { // ── INNING 1 ──
-      pitcher:          "Connor",
+      pitcher:          "Pharoh",
       catcher:          "Gus",
       first:            "Everett",
-      second:           "Lucas",
+      second:           "August",
       third:            "AJ",
-      shortstop:        "Pharoh",
-      leftField:        "Ollie",
+      shortstop:        "Lucas",
+      leftField:        "Kaveh",
       leftCenterField:  "Jonah",
-      rightCenterField: "August",
-      rightField:       "Kaveh",
-      bench: ["Henry", "Wells", "Thayne"]
+      rightCenterField: "Ollie",
+      rightField:       "Wells",
+      bench: ["Henry", "Thayne"]
     },
     { // ── INNING 2 ──
-      pitcher:          "Ollie",
-      catcher:          "Connor",
+      pitcher:          "Lucas",
+      catcher:          "AJ",
       first:            "Everett",
-      second:           "Lucas",
-      third:            "AJ",
+      second:           "August",
+      third:            "Henry",
       shortstop:        "Pharoh",
       leftField:        "Wells",
       leftCenterField:  "Jonah",
-      rightCenterField: "Henry",
+      rightCenterField: "Ollie",
       rightField:       "Thayne",
-      bench: ["Kaveh", "August", "Gus"]
+      bench: ["Gus", "Kaveh"]
     },
     { // ── INNING 3 ──
-      pitcher:          "Everett",
-      catcher:          "AJ",
+      pitcher:          "August",
+      catcher:          "Everett",
       first:            "Ollie",
-      second:           "Lucas",
-      third:            "Henry",
+      second:           "Gus",
+      third:            "AJ",
       shortstop:        "Pharoh",
       leftField:        "Kaveh",
-      leftCenterField:  "August",
-      rightCenterField: "Gus",
-      rightField:       "Wells",
-      bench: ["Connor", "Jonah", "Thayne"]
-    },
-    { // ── INNING 4 ──
-      pitcher:          "Jonah",
-      catcher:          "Gus",
-      first:            "Ollie",
-      second:           "Everett",
-      third:            "August",
-      shortstop:        "Connor",
-      leftField:        "Wells",
-      leftCenterField:  "AJ",
+      leftCenterField:  "Lucas",
       rightCenterField: "Henry",
       rightField:       "Thayne",
-      bench: ["Lucas", "Pharoh", "Kaveh"]
+      bench: ["Jonah", "Wells"]
+    },
+    { // ── INNING 4 ──
+      pitcher:          "AJ",
+      catcher:          "Gus",
+      first:            "Ollie",
+      second:           "Pharoh",
+      third:            "Kaveh",
+      shortstop:        "Jonah",
+      leftField:        "Wells",
+      leftCenterField:  "Lucas",
+      rightCenterField: "Henry",
+      rightField:       "Thayne",
+      bench: ["August", "Everett"]
     }
   ]
 
