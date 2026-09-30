@@ -182,7 +182,6 @@ body {
 }
 .nav-btn:disabled { background: #aaa; }
 
-
 #dots { text-align: center; }
 #dots .d {
   display: inline-block;
@@ -193,6 +192,7 @@ body {
 }
 #dots .d.on { background: #000; }
 
+/* ── PHONE LAYOUT (portrait screens ≤ 480px — iPhone etc.) ── */
 /* ── TABLE VIEW ── */
 #table-panel {
   display: none;
@@ -250,7 +250,6 @@ body {
 }
 body.edit-mode #header { background: #900; }
 
-/* ── PHONE LAYOUT (portrait screens ≤ 480px — iPhone etc.) ── */
 @media screen and (max-width: 480px) {
   body { overflow: auto; height: auto; }
 
@@ -297,31 +296,9 @@ body.edit-mode #header { background: #900; }
   }
   #bench-list li { width: 50%; font-size: 15px; padding: 3px 4px; }
 
-  #footer {
-    position: static;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-    padding: 8px 12px;
-    gap: 8px;
-  }
+  #footer { position: static; }
 
-  /* Dots on their own full-width row, above the buttons */
-  #dots {
-    -webkit-order: -1;
-    order: -1;
-    width: 100%;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-justify-content: center;
-    justify-content: center;
-    -webkit-align-items: center;
-    align-items: center;
-    padding: 2px 0;
-  }
-  #dots .d { margin: 0 5px; }
-
-  .nav-btn { font-size: 14px; padding: 9px 18px; min-width: 0; }
-
+  .nav-btn { font-size: 20px; padding: 14px 28px; }
 }
 </style>
 </head>
@@ -411,85 +388,109 @@ body.edit-mode #header { background: #900; }
 
 var GAME = {
 
-  teamName: "Raptors",   // ← Your team name
+  teamName: "Yard Dawgs",   // ← Your team name
 
   // All players in batting order (1 through however many you have).
   batting: [
-    "August",   //  1
-    "Jonah",    //  2
-    "Everett",  //  3
-    "Lucas",    //  4
-    "Pharoh",   //  5
-    "Ollie",    //  6
-    "Henry",    //  7
-    "AJ",       //  8
-    "Gus",      //  9
-    "Wells",    // 10
-    "Kaveh",    // 11
-    "Thayne"    // 12
+    "Anders Dickson",   //  1
+    "Harry Linford",    //  2
+    "Charlie Young",    //  3
+    "Charles Johansen", //  4
+    "Brooks Till",      //  5
+    "Sawyer Spain",     //  6
+    "Charles Bradley",  //  7
+    "Isaac Sloan",      //  8
+    "Aspen Incze",      //  9
+    "Luke Wagstaff",    // 10
+    "Julian Strand"     // 11
   ],
 
   // One entry per inning.
   // Field keys: pitcher, catcher, first, second, third, shortstop,
-  //             leftField, leftCenterField, rightCenterField, rightField
+  //             leftField, leftCenterField, centerField, rightCenterField, rightField
   // bench: list players sitting that inning (up to however many you have).
   innings: [
     { // ── INNING 1 ──
-      pitcher:          "Pharoh",
-      catcher:          "Gus",
-      first:            "Everett",
-      second:           "August",
-      third:            "AJ",
-      shortstop:        "Lucas",
-      leftField:        "Kaveh",
-      leftCenterField:  "Jonah",
-      rightCenterField: "Ollie",
-      rightField:       "Wells",
-      bench: ["Henry", "Thayne"]
+      pitcher:          "Charlie Young",
+      catcher:          "Isaac Sloan",
+      first:            "Charles Johansen",
+      second:           "Brooks Till",
+      third:            "Charles Bradley",
+      shortstop:        "Anders Dickson",
+      leftField:        "Luke Wagstaff",
+      leftCenterField:  "Sawyer Spain",
+      centerField:      "Harry Linford",
+      rightCenterField: "Aspen Incze",
+      rightField:       "Julian Strand"
     },
     { // ── INNING 2 ──
-      pitcher:          "Lucas",
-      catcher:          "AJ",
-      first:            "Everett",
-      second:           "August",
-      third:            "Henry",
-      shortstop:        "Pharoh",
-      leftField:        "Wells",
-      leftCenterField:  "Jonah",
-      rightCenterField: "Ollie",
-      rightField:       "Thayne",
-      bench: ["Gus", "Kaveh"]
+      pitcher:          "Charlie Young",
+      catcher:          "Isaac Sloan",
+      first:            "Charles Johansen",
+      second:           "Brooks Till",
+      third:            "Charles Bradley",
+      shortstop:        "Anders Dickson",
+      leftField:        "Luke Wagstaff",
+      leftCenterField:  "Sawyer Spain",
+      centerField:      "Harry Linford",
+      rightCenterField: "Aspen Incze",
+      rightField:       "Julian Strand"
     },
     { // ── INNING 3 ──
-      pitcher:          "August",
-      catcher:          "Everett",
-      first:            "Ollie",
-      second:           "Gus",
-      third:            "AJ",
-      shortstop:        "Pharoh",
-      leftField:        "Kaveh",
-      leftCenterField:  "Lucas",
-      rightCenterField: "Henry",
-      rightField:       "Thayne",
-      bench: ["Jonah", "Wells"]
+      pitcher:          "Harry Linford",
+      catcher:          "Julian Strand",
+      first:            "Charles Bradley",
+      second:           "Isaac Sloan",
+      third:            "Charles Johansen",
+      shortstop:        "Charlie Young",
+      leftField:        "Aspen Incze",
+      leftCenterField:  "Anders Dickson",
+      centerField:      "Brooks Till",
+      rightCenterField: "Sawyer Spain",
+      rightField:       "Luke Wagstaff"
     },
     { // ── INNING 4 ──
-      pitcher:          "AJ",
-      catcher:          "Gus",
-      first:            "Ollie",
-      second:           "Pharoh",
-      third:            "Kaveh",
-      shortstop:        "Jonah",
-      leftField:        "Wells",
-      leftCenterField:  "Lucas",
-      rightCenterField: "Henry",
-      rightField:       "Thayne",
-      bench: ["August", "Everett"]
+      pitcher:          "Anders Dickson",
+      catcher:          "Julian Strand",
+      first:            "Charles Bradley",
+      second:           "Isaac Sloan",
+      third:            "Sawyer Spain",
+      shortstop:        "Charlie Young",
+      leftField:        "Aspen Incze",
+      leftCenterField:  "Harry Linford",
+      centerField:      "Brooks Till",
+      rightCenterField: "Charles Johansen",
+      rightField:       "Luke Wagstaff"
+    },
+    { // ── INNING 5 ──
+      pitcher:          "Sawyer Spain",
+      catcher:          "Luke Wagstaff",
+      first:            "Harry Linford",
+      second:           "Julian Strand",
+      third:            "Aspen Incze",
+      shortstop:        "Charles Johansen",
+      leftField:        "Charlie Young",
+      leftCenterField:  "Anders Dickson",
+      centerField:      "Brooks Till",
+      rightCenterField: "Isaac Sloan",
+      rightField:       "Charles Bradley"
+    },
+    { // ── INNING 6 ──
+      pitcher:          "Sawyer Spain",
+      catcher:          "Luke Wagstaff",
+      first:            "Harry Linford",
+      second:           "Julian Strand",
+      third:            "Aspen Incze",
+      shortstop:        "Brooks Till",
+      leftField:        "Charlie Young",
+      leftCenterField:  "Anders Dickson",
+      centerField:      "Charles Bradley",
+      rightCenterField: "Isaac Sloan",
+      rightField:       "Charles Johansen"
     }
   ]
 
 };
-
 
 // ================================================================
 //   ⚙️  APP CODE — no need to edit below this line
@@ -497,10 +498,11 @@ var GAME = {
 
 // SVG (x, y) = center of label; abbr = abbreviation shown above name
 var POS = {
-  leftField:        { abbr: "LF",  x: 52,  y: 142 },
-  leftCenterField:  { abbr: "LCF", x: 118, y: 75  },
-  rightCenterField: { abbr: "RCF", x: 202, y: 75  },
-  rightField:       { abbr: "RF",  x: 268, y: 142 },
+  leftField:        { abbr: "LF",  x: 42,  y: 148 },
+  leftCenterField:  { abbr: "LCF", x: 108, y: 90  },
+  centerField:      { abbr: "CF",  x: 160, y: 52  },
+  rightCenterField: { abbr: "RCF", x: 212, y: 90  },
+  rightField:       { abbr: "RF",  x: 278, y: 148 },
   shortstop:        { abbr: "SS",  x: 103, y: 207 },
   second:           { abbr: "2B",  x: 215, y: 197 },
   pitcher:          { abbr: "P",   x: 160, y: 252 },
@@ -512,7 +514,7 @@ var POS = {
 var ABBR = {
   pitcher:'P', catcher:'C', first:'1B', second:'2B', third:'3B',
   shortstop:'SS', leftField:'LF', leftCenterField:'LCF',
-  rightCenterField:'RCF', rightField:'RF'
+  centerField:'CF', rightCenterField:'RCF', rightField:'RF'
 };
 
 var cur = 0;
@@ -571,21 +573,17 @@ function render() {
   // ── Bench slots ──
   var benchPlayers = inn.bench || [];
   var benchHtml = '';
-  // Show at least 2 slots even if empty
-  var slots = Math.max(benchPlayers.length, 2);
+  var slots = benchPlayers.length;
   for (var i = 0; i < slots; i++) {
     var slotKey = 'bench_' + i;
     var isSel = editMode && selectedSlot === slotKey;
     var tap = editMode
       ? ' onclick="handleSlotClick(\'' + slotKey + '\')" style="cursor:pointer' + (isSel ? ';background:#FFD700' : '') + '"'
       : '';
-    if (benchPlayers[i]) {
-      benchHtml += '<li' + tap + '><span class="bnum">' + (i + 1) + '.</span>' + benchPlayers[i] + '</li>';
-    } else {
-      benchHtml += '<li class="empty"' + tap + '><span class="bnum">' + (i + 1) + '.</span>—</li>';
-    }
+    benchHtml += '<li' + tap + '><span class="bnum">' + (i + 1) + '.</span>' + benchPlayers[i] + '</li>';
   }
   document.getElementById('bench-list').innerHTML = benchHtml;
+  document.getElementById('bench-wrap').style.display = benchPlayers.length === 0 ? 'none' : '';
 
   // ── Header ──
   document.getElementById('team-name').textContent = GAME.teamName;
